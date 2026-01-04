@@ -1,7 +1,5 @@
 
-while wait() do
-    game:GetService("GuiService"):ClearError()
-end
+
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 local Window = Library.CreateLib("Game Joiner", "DarkTheme")
 local Tab = Window:NewTab("Teleport")
@@ -64,3 +62,7 @@ Section:NewTextBox("Game Instance", "Format: PlaceID,JobID", function(input)
         print("Please use format: PlaceID,JobID")
     end
 end)
+
+while wait() do
+    game:GetService("GuiService"):ClearError()
+end
