@@ -1,236 +1,29 @@
--- LocalScript: Place in StarterPlayer.StarterPlayerScripts
--- Simple GUI with single-line textbox for teleport scripts
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("Game Joiner", "DarkTheme")
+local Tab = Window:NewTab("Teleport")
+local Section = Tab:NewSection("Join Game Instance")
 
-local Players = game:GetService("Players")
-local TeleportService = game:GetService("TeleportService")
-local UserInputService = game:GetService("UserInputService")
-
-local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
-
-local ATTEMPTS = 1500
-local COOLDOWN = 0.01
-local IS_RUNNING = false
-
--- Create ScreenGui
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "TeleportGUI"
-screenGui.ResetOnSpawn = false
-screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
--- Main frame
-local mainFrame = Instance.new("Frame")
-mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 500, 0, 140)
-mainFrame.Position = UDim2.new(0.5, -250, 0.5, -70)
-mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
-mainFrame.BorderSizePixel = 0
-
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 8)
-corner.Parent = mainFrame
-
--- Title
-local title = Instance.new("TextLabel")
-title.Name = "Title"
-title.Size = UDim2.new(1, 0, 0, 30)
-title.BackgroundTransparency = 1
-title.Text = "TELEPORT SCRIPT"
-title.Font = Enum.Font.GothamBold
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.TextSize = 16
-title.Parent = mainFrame
-
--- SINGLE LINE textbox - NO MULTILINE
-local scriptBox = Instance.new("TextBox")
-scriptBox.Name = "ScriptBox"
-scriptBox.Size = UDim2.new(1, -20, 0, 35)
-scriptBox.Position = UDim2.new(0, 10, 0, 35)
-scriptBox.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-scriptBox.BorderSizePixel = 0
-scriptBox.Font = Enum.Font.RobotoMono
-scriptBox.PlaceholderText = "Paste TeleportToPlaceInstance(placeId,'instanceId') here..."
-scriptBox.Text = ""
-scriptBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-scriptBox.TextSize = 13
-scriptBox.MultiLine = false  -- THIS IS THE KEY - NO MULTILINE
-scriptBox.TextWrapped = false
-scriptBox.ClearTextOnFocus = false
-scriptBox.TextXAlignment = Enum.TextXAlignment.Left
-
-local scriptCorner = Instance.new("UICorner")
-scriptCorner.CornerRadius = UDim.new(0, 6)
-scriptCorner.Parent = scriptBox
-
-scriptBox.Parent = mainFrame
-
--- Status label
-local statusLabel = Instance.new("TextLabel")
-statusLabel.Name = "Status"
-statusLabel.Size = UDim2.new(1, -20, 0, 20)
-statusLabel.Position = UDim2.new(0, 10, 0, 75)
-statusLabel.BackgroundTransparency = 1
-statusLabel.Text = "Press ENTER key to start"
-statusLabel.Font = Enum.Font.Gotham
-statusLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
-statusLabel.TextSize = 12
-statusLabel.Parent = mainFrame
-
--- Counter label
-local counterLabel = Instance.new("TextLabel")
-counterLabel.Name = "Counter"
-counterLabel.Size = UDim2.new(1, -20, 0, 20)
-counterLabel.Position = UDim2.new(0, 10, 0, 95)
-counterLabel.BackgroundTransparency = 1
-counterLabel.Text = ""
-counterLabel.Font = Enum.Font.Gotham
-counterLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
-counterLabel.TextSize = 11
-counterLabel.Parent = mainFrame
-
-mainFrame.Parent = screenGui
-screenGui.Parent = playerGui
-
--- Function to extract teleport info
-local function extractTeleportInfo(scriptText)
-    scriptText = scriptText:gsub("%s+", "")
+Section:NewTextBox("Game Instance", "Format: PlaceID,JobID", function(input)
+    -- Parse the input (example: 10998366807, "abc-123")
+    local args = {}
     
-    local pattern = "TeleportToPlaceInstance%((%d+),['\"]([%w%-]+)['\"]%)"
-    local placeId, instanceId = scriptText:match(pattern)
-    
-    if placeId and instanceId then
-        return tonumber(placeId), instanceId
+    -- Remove any quotes and split by comma
+    local cleaned = input:gsub("'", ""):gsub('"', '')
+    for part in cleaned:gmatch("[^,]+") do
+        table.insert(args, part:match("^%s*(.-)%s*$"))
     end
     
-    return nil, nil
-end
-
--- Function to start teleport loop
-local function startTeleportLoop()
-    if IS_RUNNING then return end
-    
-    local scriptText = scriptBox.Text
-    if scriptText == "" then
-        statusLabel.Text = "Enter script first"
-        task.wait(1)
-        statusLabel.Text = "Press ENTER key to start"
-        return
-    end
-    
-    local placeId, instanceId = extractTeleportInfo(scriptText)
-    
-    if not placeId then
-        statusLabel.Text = "Invalid format"
-        task.wait(1)
-        statusLabel.Text = "Press ENTER key to start"
-        return
-    end
-    
-    IS_RUNNING = true
-    statusLabel.Text = "RUNNING - Press ESC to stop"
-    statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-    
-    local stopConnection
-    stopConnection = UserInputService.InputBegan:Connect(function(input)
-        if input.KeyCode == Enum.KeyCode.Escape and IS_RUNNING then
-            IS_RUNNING = false
-            stopConnection:Disconnect()
-            statusLabel.Text = "STOPPED"
-            statusLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
-            counterLabel.Text = ""
-        end
-    end)
-    
-    -- Run teleport attempts
-    task.spawn(function()
-        for i = 1, ATTEMPTS do
-            if not IS_RUNNING then break end
-            
-            counterLabel.Text = string.format("Attempt %d/%d", i, ATTEMPTS)
-            
-            pcall(function()
-                TeleportService:TeleportToPlaceInstance(placeId, instanceId)
-            end)
-            
-            if i < ATTEMPTS then
-                task.wait(COOLDOWN)
+    if #args >= 2 then
+        local placeId = tonumber(args[1])
+        local jobId = args[2]
+        
+        if placeId and jobId and #jobId > 0 then
+            -- Join twice with 1 second cooldown
+            for i = 0.01, 1500 do
+                pcall(function()
+                    game:GetService('TeleportService'):TeleportToPlaceInstance(placeId, jobId)
+                end)
             end
         end
-        
-        if IS_RUNNING then
-            IS_RUNNING = false
-            statusLabel.Text = "COMPLETED"
-            statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-            counterLabel.Text = ""
-            stopConnection:Disconnect()
-        end
-    end)
-end
-
--- CRITICAL FIX: Prevent Enter from creating new line
-scriptBox.FocusLost:Connect(function(enterPressed)
-    -- When textbox loses focus with Enter pressed
-    if enterPressed then
-        -- IMPORTANT: Reset text to remove any newline that might have been added
-        local currentText = scriptBox.Text
-        -- Remove any newlines or carriage returns
-        currentText = currentText:gsub("[\n\r]", "")
-        scriptBox.Text = currentText
-        
-        if not IS_RUNNING then
-            startTeleportLoop()
-        end
-    end
-end)
-
--- Handle Enter key globally
-UserInputService.InputBegan:Connect(function(input, processed)
-    if (input.KeyCode == Enum.KeyCode.Return or input.KeyCode == Enum.KeyCode.KeypadEnter) and not processed then
-        -- If textbox is focused, release focus first
-        if scriptBox:IsFocused() then
-            scriptBox:ReleaseFocus()
-        else
-            if not IS_RUNNING then
-                startTeleportLoop()
-            end
-        end
-    end
-end)
-
--- Make GUI draggable
-local dragging = false
-local dragStart = Vector2.new(0, 0)
-local frameStart = Vector2.new(0, 0)
-
-title.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        frameStart = Vector2.new(mainFrame.Position.X.Scale, mainFrame.Position.Y.Scale)
-    end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        local newX = frameStart.X + (delta.X / screenGui.AbsoluteSize.X)
-        local newY = frameStart.Y + (delta.Y / screenGui.AbsoluteSize.Y)
-        mainFrame.Position = UDim2.new(newX, 0, newY, 0)
-    end
-end)
-
-UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
-    end
-end)
-
--- Also clean text on text change
-scriptBox:GetPropertyChangedSignal("Text"):Connect(function()
-    -- Remove any newlines that somehow get in
-    if scriptBox.Text:find("[\n\r]") then
-        local cleaned = scriptBox.Text:gsub("[\n\r]", "")
-        scriptBox.Text = cleaned
     end
 end)
