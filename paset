@@ -817,7 +817,7 @@ local function shouldHighlight(player)
     elseif autistDict[playerName] then
         return true, Color3.fromRGB(255, 105, 180), "BRBR PATAPIM\n" .. playerName
     elseif zrDict[playerName] then
-        return true, Color3.fromRGB(255, 255, 0), "🛠DEV⚒\n" .. playerName
+        return true, Color3.fromRGB(0, 255, 255), "AURORA🎶\n" .. playerName
     end
     
     return false
