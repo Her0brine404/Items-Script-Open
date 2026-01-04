@@ -1,5 +1,3 @@
-
-
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 local Window = Library.CreateLib("Game Joiner", "DarkTheme")
 local Tab = Window:NewTab("Teleport")
@@ -38,22 +36,50 @@ Section:NewTextBox("Game Instance", "Format: PlaceID,JobID", function(input)
         if placeId and jobId and #jobId > 0 then
             print("Starting teleport to " .. placeId .. ", " .. jobId)
             
+            -- Подключаем обработчик ошибок телепортации
+            local teleportFailedConnection
+            teleportFailedConnection = game:GetService("TeleportService").TeleportInitFailed:Connect(function(player, teleportResult, errorMessage)
+                if errorMessage:find("Can't join private instance through specific joins") or 
+                   errorMessage:find("Unauthorized") then
+                    print("Private instance error detected: " .. errorMessage)
+                    cancelTeleport = true
+                end
+            end)
+            
             -- Пытаемся подключиться несколько раз, но проверяем флаг отмены
             for i = 1, 1500 do
                 -- Проверяем, не нажата ли кнопка отмены
                 if cancelTeleport then
-                    print("Teleport process stopped by user")
+                    print("Teleport process stopped")
                     break
                 end
                 
-                pcall(function()
+                local success, errorMsg = pcall(function()
                     game:GetService('TeleportService'):TeleportToPlaceInstance(placeId, jobId)
-                    wait(0.01)
                 end)
+                
+                if not success then
+                    -- Проверяем, содержит ли ошибка сообщение о приватном инстансе
+                    if errorMsg and (errorMsg:find("Can't join private instance through specific joins") or 
+                       errorMsg:find("Unauthorized")) then
+                        print("Private instance error: " .. errorMsg)
+                        cancelTeleport = true
+                        break
+                    end
+                end
+                
+                wait(0.01)
+            end
+            
+            -- Отключаем обработчик
+            if teleportFailedConnection then
+                teleportFailedConnection:Disconnect()
             end
             
             if not cancelTeleport then
                 print("Teleport process completed")
+            else
+                print("Teleport process stopped (private instance or user cancelled)")
             end
         else
             print("Invalid input format!")
@@ -62,7 +88,3 @@ Section:NewTextBox("Game Instance", "Format: PlaceID,JobID", function(input)
         print("Please use format: PlaceID,JobID")
     end
 end)
-
-while wait() do
-    game:GetService("GuiService"):ClearError()
-end
