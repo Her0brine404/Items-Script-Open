@@ -1,0 +1,347 @@
+wait(2) -- Wait for initial loading
+local players = game:GetService("Players")
+local localPlayer = players.LocalPlayer
+local StarterGui = game:GetService("StarterGui")
+
+-- Correct notification with proper callback syntax
+StarterGui:SetCore("SendNotification", {
+    Title = "🎶 AURORA ESP",
+    Text = "Join our discord",
+    Duration = 15,
+    Callback = function()
+        print("yes")
+    end,
+    Button1 = "https://discord.gg/jdba3EhKFS"
+})
+
+-- Define usernames for special highlights with Discord usernames
+local usernamesToHighlight = {
+    Hai_izY = "@ha1zy_x",
+    SebastianBlack321 = "@whialm71",
+    rnbs1111 = "@tt_puffik",
+    jikolikk = "@h1dekii",
+    Mrfreshasian_14 = "@kombekuchka",
+    Kupetsizprovincii = "@???",
+    Ruanonaja01491 = "@youdontdoxme",
+    SigmaShluhaa = "@nevermine_sex",
+    bankeras111 = "@bankeras",
+    SAPFEARM = "@makelav_",
+    DTJDVS = "@eskizzz_",
+    kosty9000 = "@supertemka1488",
+    Mostic_2 = "@dild_06887",
+    godblessgrisha = "@ieuj",
+    izallenyo573 = "@tiger003044",
+    beakid2025 = "@fortunes0_0",
+    asusrogstrix0 = "@ng.xyz"
+}
+
+local griefersList = {"TolikDemidovich2016", "Bigwayne804", "Cznyarr0", "Otaya311", "urtado21", "vtguerra0444", "Agod3256", "iopm20245", "GHSTOCK", "remove124321", "yaryar_820", "Yhumadsus", "35355fdv", "lxcvarden", "bebeegoo", "theyuutora24", "frechfry069", "carma2cutee", "osher3002", "rizzy_10006", "HKlgncx", "Therealthing530", "MacakoZad6", "Mert_killer900", "JossGuti22", "sebas_90210z", "Skibidipon200", "LUCI_09811", "dezzzzzahhb", "chdncjsskdockslkl", "Leminhthe0000000", "CFrank1784", "jdbdjxndm", "JxJ_Joseph", "xAstroBoy_1", "Sobi_Type", "Cznyarr0", "sdfg7681", "az9az9az94411", "evilbanbanxred", "2W6G3G", "Luisroblest97", "ilyj3y", "Steal_brainrot1505", "Dannybg77777", "funpayzxcpsihokids1", "dead222237", "GGTAKTIKOL1", "vqkm", "karanisHIM", "TheGremlin4850", "markoponi3", "1hzsq", "444clawh", "Djamalimami", "donk123468", "TheMondraZ", "dinoboy31313131", "BANYOL66", "SEMA29733", "lmochingal", "alt_namber32", "Chequecam"}
+local autist = {"zr3cinshlyxi"}
+local zr = {"Fitiloid"}
+local highlightedPlayers = {} -- Track highlighted players
+
+-- Convert griefersList, autist, and zr to dictionaries for faster lookup
+local griefersDict = {}
+for _, name in ipairs(griefersList) do
+    griefersDict[name] = true
+end
+
+local autistDict = {}
+for _, name in ipairs(autist) do
+    autistDict[name] = true
+end
+
+local zrDict = {}
+for _, name in ipairs(zr) do
+    zrDict[name] = true
+end
+
+local function safeCreateHighlight(player, highlightColor, labelText)
+    -- Check if already highlighted
+    if highlightedPlayers[player.UserId] then 
+        -- Update existing highlight if needed
+        local data = highlightedPlayers[player.UserId]
+        if data.color ~= highlightColor or data.label ~= labelText then
+            safeRemoveHighlight(player)
+        else
+            return 
+        end
+    end
+    
+    -- Wait for character if needed
+    if not player.Character then
+        local characterAdded = player.CharacterAdded:Wait()
+        task.wait(0.5) -- Additional wait for character to fully load
+    end
+    
+    local character = player.Character
+    if not character then return end
+    
+    -- Wait for head to exist
+    local head = character:WaitForChild("Head", 2)
+    if not head then return end
+    
+    -- Clean up any existing highlights first
+    pcall(function()
+        for _, obj in pairs(character:GetChildren()) do
+            if obj:IsA("Highlight") and obj.Name == "PlayerHighlight" then
+                obj:Destroy()
+            end
+        end
+    end)
+    
+    -- Clean up existing billboards
+    pcall(function()
+        for _, obj in pairs(head:GetChildren()) do
+            if obj:IsA("BillboardGui") and obj.Name == "PlayerLabel" then
+                obj:Destroy()
+            end
+        end
+    end)
+
+    -- Create highlight with error handling
+    local highlight
+    local success, highlightErr = pcall(function()
+        highlight = Instance.new("Highlight")
+        highlight.Name = "PlayerHighlight"
+        highlight.Parent = character
+        highlight.OutlineColor = highlightColor
+        highlight.FillColor = highlightColor
+        highlight.FillTransparency = 0.7
+        highlight.OutlineTransparency = 0.2
+        highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        highlight.Enabled = true
+        return true
+    end)
+    
+    if not success or not highlight then 
+        return 
+    end
+    
+    -- Create text label with error handling
+    local textBillboard
+    local success4, billboardErr = pcall(function()
+        local billboard = Instance.new("BillboardGui")
+        billboard.Name = "PlayerLabel"
+        billboard.Adornee = head
+        billboard.Size = UDim2.new(10, 0, 2, 0)
+        billboard.StudsOffset = Vector3.new(0, 3.5, 0)
+        billboard.AlwaysOnTop = true
+        billboard.MaxDistance = 1500
+        billboard.Enabled = true
+        
+        local textLabel = Instance.new("TextLabel")
+        textLabel.Text = labelText
+        textLabel.TextColor3 = highlightColor
+        textLabel.BackgroundTransparency = 1
+        textLabel.Size = UDim2.new(1, 0, 1, 0)
+        textLabel.TextScaled = false
+        textLabel.TextSize = 16
+        textLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
+        textLabel.TextStrokeTransparency = 0.3
+        textLabel.Font = Enum.Font.GothamBold
+        textLabel.TextYAlignment = Enum.TextYAlignment.Center
+        textLabel.TextXAlignment = Enum.TextXAlignment.Center
+        
+        textLabel.Parent = billboard
+        billboard.Parent = head
+        
+        textBillboard = billboard
+        return true
+    end)
+    
+    if not success4 then
+        if highlight then highlight:Destroy() end
+        return
+    end
+    
+    -- Store highlight data
+    highlightedPlayers[player.UserId] = {
+        highlight = highlight,
+        billboard = textBillboard,
+        player = player,
+        color = highlightColor,
+        label = labelText
+    }
+    
+    print("Highlighted player:", player.Name, "with color:", highlightColor)
+end
+
+local function safeRemoveHighlight(player)
+    local highlightData = highlightedPlayers[player.UserId]
+    if highlightData then
+        pcall(function()
+            if highlightData.highlight and highlightData.highlight.Parent then
+                highlightData.highlight:Destroy()
+            end
+        end)
+        
+        pcall(function()
+            if highlightData.billboard and highlightData.billboard.Parent then
+                highlightData.billboard:Destroy()
+            end
+        end)
+        
+        highlightedPlayers[player.UserId] = nil
+    end
+end
+
+local function shouldHighlight(player)
+    local playerName = player.Name
+    
+    if player == localPlayer then
+        return true, Color3.fromRGB(0, 255, 0), "YOU\n" .. playerName
+    elseif griefersDict[playerName] then
+        return true, Color3.fromRGB(255, 0, 0), "🔴GRIEFER🔴\n" .. playerName
+    elseif usernamesToHighlight[playerName] then
+        local discordUsername = usernamesToHighlight[playerName]
+        return true, Color3.fromRGB(0, 255, 255), "AURORA🎶\n" .. playerName .. " - " .. discordUsername
+    elseif autistDict[playerName] then
+        return true, Color3.fromRGB(255, 105, 180), "BRBR PATAPIM\n" .. playerName
+    elseif zrDict[playerName] then
+        return true, Color3.fromRGB(255, 255, 0), "🛠DEV⚒\n" .. playerName
+    end
+    
+    return false
+end
+
+local function safeHighlightPlayers()
+    for _, player in ipairs(players:GetPlayers()) do
+        local shouldHighlightPlayer, color, label = shouldHighlight(player)
+        
+        if shouldHighlightPlayer then
+            safeCreateHighlight(player, color, label)
+        else
+            safeRemoveHighlight(player)
+        end
+    end
+end
+
+-- Function to check if "Fitiloid" is present and kick local player if so
+local function checkForFitiloidAndKick()
+    -- Do not kick if local player is Fitiloid or zr3cinshlyxi
+    if not localPlayer or localPlayer.Name == "Fitiloid" or localPlayer.Name == "zr3cinshlyxi" then
+        return
+    end
+
+    for _, player in ipairs(players:GetPlayers()) do
+        if player.Name == "Fitiloid" and player ~= localPlayer then
+            -- Kick the local player with the required reason
+            local success, err = pcall(function()
+                localPlayer:Kick("You have been removed for cheating please remove any cheats to play | CODE BAC-5443")
+            end)
+            if not success then
+                warn("Failed to kick local player:", err)
+            end
+            return
+        end
+    end
+end
+
+-- Function to handle character changes
+local function setupPlayerListeners(player)
+    -- Handle character changes for ALL players including yourself
+    player.CharacterAdded:Connect(function(character)
+        task.wait(1) -- Wait for character to fully load
+        
+        local shouldHighlightPlayer, color, label = shouldHighlight(player)
+        if shouldHighlightPlayer then
+            safeCreateHighlight(player, color, label)
+        end
+
+        -- Re-check Fitiloid presence when characters load
+        checkForFitiloidAndKick()
+    end)
+    
+    -- Clean up when character is removed
+    player.CharacterRemoving:Connect(function()
+        safeRemoveHighlight(player)
+    end)
+end
+
+-- Set up listeners for all existing players (including yourself)
+for _, player in ipairs(players:GetPlayers()) do
+    setupPlayerListeners(player)
+end
+
+-- Function to check existing players immediately for Fitiloid
+local function checkExistingPlayersForFitiloid()
+    for _, player in ipairs(players:GetPlayers()) do
+        if player.Name == "Fitiloid" and player ~= localPlayer then
+            checkForFitiloidAndKick()
+            return
+        end
+    end
+end
+
+-- Set up listener for new players
+players.PlayerAdded:Connect(function(player)
+    setupPlayerListeners(player)
+    task.wait(2) -- Wait for player to load
+    safeHighlightPlayers() -- Check if new player should be highlighted
+    
+    -- Check for "Fitiloid" specifically when new player joins
+    if player.Name == "Fitiloid" then
+        checkForFitiloidAndKick()
+    end
+end)
+-- Handle player leaving
+players.PlayerRemoving:Connect(function(player)
+    safeRemoveHighlight(player)
+    highlightedPlayers[player.UserId] = nil
+end)
+
+-- Set up self-highlight listener specifically for local player
+if localPlayer then
+    localPlayer.CharacterAdded:Connect(function(character)
+        task.wait(1)
+        safeCreateHighlight(localPlayer, Color3.fromRGB(0, 255, 0), "YOU\n" .. localPlayer.Name)
+        -- Check for Fitiloid when local character spawns
+        checkForFitiloidAndKick()
+    end)
+end
+
+-- Initial highlight for all players (with delay)
+task.wait(3)
+safeHighlightPlayers()
+
+-- Initial check for Fitiloid
+checkExistingPlayersForFitiloid()
+
+-- Periodic cleanup and highlight check
+spawn(function()
+    while true do
+        task.wait(10) -- Check every 10 seconds for highlights cleanup and updates
+        
+        -- Clean up highlights for players who left
+        local currentPlayerIds = {}
+        for _, player in ipairs(players:GetPlayers()) do
+            currentPlayerIds[player.UserId] = true
+        end
+        
+        for userId, highlightData in pairs(highlightedPlayers) do
+            if not currentPlayerIds[userId] then
+                pcall(function()
+                    if highlightData.highlight and highlightData.highlight.Parent then
+                        highlightData.highlight:Destroy()
+                    end
+                    if highlightData.billboard and highlightData.billboard.Parent then
+                        highlightData.billboard:Destroy()
+                    end
+                end)
+                highlightedPlayers[userId] = nil
+            end
+        end
+        
+        -- Update highlights for current players (including yourself)
+        safeHighlightPlayers()
+    end
+end)
+
+-- Fast loop to check for Fitiloid every 0.3 seconds
+spawn(function()
+    while true do
+        task.wait(0.3)
+        checkForFitiloidAndKick()
+    end
+end)
