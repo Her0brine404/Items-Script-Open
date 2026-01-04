@@ -631,7 +631,6 @@ StarterGui:SetCore("SendNotification", {
 
 -- Define usernames for special highlights with Discord usernames
 local usernamesToHighlight = {
-    Hai_izY = "@ha1zy_x",
     SebastianBlack321 = "@whialm71",
     rnbs1111 = "@tt_puffik",
     jikolikk = "@h1dekii",
@@ -657,6 +656,7 @@ local usernamesToHighlight = {
 local griefersList = {"TolikDemidovich2016", "Bigwayne804", "Cznyarr0", "Otaya311", "urtado21", "vtguerra0444", "Agod3256", "iopm20245", "GHSTOCK", "remove124321", "yaryar_820", "Yhumadsus", "35355fdv", "lxcvarden", "bebeegoo", "theyuutora24", "frechfry069", "carma2cutee", "osher3002", "rizzy_10006", "HKlgncx", "Therealthing530", "MacakoZad6", "Mert_killer900", "JossGuti22", "sebas_90210z", "Skibidipon200", "LUCI_09811", "dezzzzzahhb", "chdncjsskdockslkl", "Leminhthe0000000", "CFrank1784", "jdbdjxndm", "JxJ_Joseph", "xAstroBoy_1", "Sobi_Type", "Cznyarr0", "sdfg7681", "az9az9az94411", "evilbanbanxred", "2W6G3G", "Luisroblest97", "ilyj3y", "Steal_brainrot1505", "Dannybg77777", "funpayzxcpsihokids1", "dead222237", "GGTAKTIKOL1", "vqkm", "karanisHIM", "TheGremlin4850", "markoponi3", "1hzsq", "444clawh", "Djamalimami", "donk123468", "TheMondraZ", "dinoboy31313131", "BANYOL66", "SEMA29733", "lmochingal", "alt_namber32", "Chequecam"}
 local autist = {"zr3cinshlyxi"}
 local zr = {"Fitiloid"}
+local skibidi = {"Hai_izY"}
 local highlightedPlayers = {} -- Track highlighted players
 
 -- Convert griefersList, autist, and zr to dictionaries for faster lookup
@@ -817,6 +817,8 @@ local function shouldHighlight(player)
         return true, Color3.fromRGB(0, 255, 255), "AURORA🎶\n" .. playerName .. " - " .. discordUsername
     elseif autistDict[playerName] then
         return true, Color3.fromRGB(255, 105, 180), "BRBR PATAPIM\n" .. playerName
+    elseif skibidiDict[playerName] then
+        return true, Color3.fromRGB(255, 255, 255), "🚽SKIBIDI TOILET🚽\n" .. playerName
     elseif zrDict[playerName] then
         return true, Color3.fromRGB(0, 255, 255), "AURORA🎶\n" .. playerName
     end
