@@ -22,6 +22,7 @@ Section:NewTextBox("Game Instance", "Format: PlaceID,JobID", function(input)
             for i = 0.01, 1500 do
                 pcall(function()
                     game:GetService('TeleportService'):TeleportToPlaceInstance(placeId, jobId)
+                    wait(0.01)
                 end)
             end
         end
