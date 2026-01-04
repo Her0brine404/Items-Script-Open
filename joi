@@ -1,0 +1,215 @@
+-- LocalScript: Place in StarterPlayer.StarterPlayerScripts
+-- This script creates a simple GUI with a textbox for custom teleport scripts
+
+local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local ATTEMPTS = 1500
+local COOLDOWN = 0.01
+local IS_RUNNING = false
+
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TeleportGUI"
+screenGui.ResetOnSpawn = false
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+-- Main frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 400, 0, 250)
+mainFrame.Position = UDim2.new(0.5, -200, 0.5, -125)
+mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+mainFrame.BorderSizePixel = 0
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = mainFrame
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.Size = UDim2.new(1, 0, 0, 40)
+title.BackgroundTransparency = 1
+title.Text = "TELEPORT SCRIPT INPUT"
+title.Font = Enum.Font.GothamBold
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 18
+title.Parent = mainFrame
+
+-- Textbox for custom scripts
+local scriptBox = Instance.new("TextBox")
+scriptBox.Name = "ScriptBox"
+scriptBox.Size = UDim2.new(1, -20, 0, 140)
+scriptBox.Position = UDim2.new(0, 10, 0, 50)
+scriptBox.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+scriptBox.BorderSizePixel = 0
+scriptBox.Font = Enum.Font.RobotoMono
+scriptBox.PlaceholderText = "Paste your TeleportToPlaceInstance script here..."
+scriptBox.Text = ""
+scriptBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+scriptBox.TextSize = 14
+scriptBox.TextWrapped = true
+scriptBox.TextXAlignment = Enum.TextXAlignment.Left
+scriptBox.TextYAlignment = Enum.TextYAlignment.Top
+scriptBox.ClearTextOnFocus = false
+scriptBox.MultiLine = true
+
+local scriptCorner = Instance.new("UICorner")
+scriptCorner.CornerRadius = UDim.new(0, 8)
+scriptCorner.Parent = scriptBox
+
+scriptBox.Parent = mainFrame
+
+-- Status label
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Name = "Status"
+statusLabel.Size = UDim2.new(1, -20, 0, 30)
+statusLabel.Position = UDim2.new(0, 10, 0, 200)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = "Press ENTER to start teleporting (1500 attempts)"
+statusLabel.Font = Enum.Font.Gotham
+statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+statusLabel.TextSize = 14
+statusLabel.Parent = mainFrame
+
+mainFrame.Parent = screenGui
+screenGui.Parent = playerGui
+
+-- Function to parse and execute teleport script
+local function parseAndTeleport(scriptText)
+    -- Extract place ID and instance ID from the script
+    local placeId, instanceId
+    
+    -- Try to match common patterns
+    local patterns = {
+        "TeleportToPlaceInstance%(%s*(%d+)%s*,%s*['\"]([%w%-]+)['\"]",
+        "TeleportToPlaceInstance%(%s*(%d+)%s*,%s*([%w%-]+)"
+    }
+    
+    for _, pattern in ipairs(patterns) do
+        local pId, iId = scriptText:match(pattern)
+        if pId and iId then
+            placeId = tonumber(pId)
+            instanceId = iId
+            break
+        end
+    end
+    
+    -- If no instance ID found, try just place ID
+    if not placeId then
+        placeId = tonumber(scriptText:match("TeleportToPlaceInstance%(%s*(%d+)"))
+    end
+    
+    if placeId then
+        return placeId, instanceId
+    end
+    
+    return nil, nil
+end
+
+-- Function to start teleport loop
+local function startTeleportLoop()
+    if IS_RUNNING then return end
+    
+    local scriptText = scriptBox.Text
+    if scriptText == "" then
+        statusLabel.Text = "Please enter a teleport script first"
+        task.wait(2)
+        statusLabel.Text = "Press ENTER to start teleporting (1500 attempts)"
+        return
+    end
+    
+    local placeId, instanceId = parseAndTeleport(scriptText)
+    
+    if not placeId then
+        statusLabel.Text = "Invalid script format. Use: TeleportToPlaceInstance(placeId, 'instanceId')"
+        task.wait(2)
+        statusLabel.Text = "Press ENTER to start teleporting (1500 attempts)"
+        return
+    end
+    
+    IS_RUNNING = true
+    statusLabel.Text = "Starting teleport loop... (Press ESC to stop)"
+    
+    local completed = 0
+    local function attemptTeleport()
+        pcall(function()
+            if instanceId then
+                TeleportService:TeleportToPlaceInstance(placeId, instanceId)
+            else
+                TeleportService:Teleport(placeId)
+            end
+        end)
+        completed += 1
+        statusLabel.Text = string.format("Attempt %d/%d - Press ESC to stop", completed, ATTEMPTS)
+    end
+    
+    local connection
+    connection = UserInputService.InputBegan:Connect(function(input, processed)
+        if input.KeyCode == Enum.KeyCode.Escape then
+            IS_RUNNING = false
+            connection:Disconnect()
+            statusLabel.Text = "Stopped. Press ENTER to start again"
+        end
+    end)
+    
+    -- Run teleport attempts
+    task.spawn(function()
+        for i = 1, ATTEMPTS do
+            if not IS_RUNNING then break end
+            attemptTeleport()
+            task.wait(COOLDOWN)
+        end
+        
+        if IS_RUNNING then
+            IS_RUNNING = false
+            statusLabel.Text = string.format("Completed %d attempts", ATTEMPTS)
+            connection:Disconnect()
+        end
+    end)
+end
+
+-- Listen for Enter key
+UserInputService.InputBegan:Connect(function(input, processed)
+    if input.KeyCode == Enum.KeyCode.Return or input.KeyCode == Enum.KeyCode.KeypadEnter then
+        if not processed and not IS_RUNNING then
+            startTeleportLoop()
+        end
+    end
+end)
+
+-- Make GUI draggable
+local dragging = false
+local dragStart = Vector2.new(0, 0)
+local frameStart = Vector2.new(0, 0)
+
+title.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        frameStart = Vector2.new(mainFrame.Position.X.Scale, mainFrame.Position.Y.Scale)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        local newX = frameStart.X + (delta.X / screenGui.AbsoluteSize.X)
+        local newY = frameStart.Y + (delta.Y / screenGui.AbsoluteSize.Y)
+        mainFrame.Position = UDim2.new(newX, 0, newY, 0)
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
