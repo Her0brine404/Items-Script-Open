@@ -468,7 +468,7 @@ local function sendDiscordNotificationByRange(filteredObjects, webhookConfig)
 
     -- Телепорт: две строки Lua
     local teleportLua = string.format(
-        "```%d, '%s```",
+        "```%d, %s```",
         placeId,
         jobId
     )
