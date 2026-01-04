@@ -7,11 +7,27 @@ local Window = Library.CreateLib("Game Joiner", "DarkTheme")
 local Tab = Window:NewTab("Teleport")
 local Section = Tab:NewSection("Join Game Instance")
 
+-- Переменная для контроля процесса подключения
+local cancelTeleport = false
+
+-- Секция с управлением
+local Section2 = Tab:NewSection("Control")
+
+-- Кнопка отмены
+Section2:NewButton("Cancel Teleport", "Stop current teleport process", function()
+    cancelTeleport = true
+    print("Teleport cancelled!")
+end)
+
+-- Текстовое поле для подключения
 Section:NewTextBox("Game Instance", "Format: PlaceID,JobID", function(input)
-    -- Parse the input (example: 10998366807, "abc-123")
+    -- Сбрасываем флаг отмены
+    cancelTeleport = false
+    
+    -- Парсим ввод
     local args = {}
     
-    -- Remove any quotes and split by comma
+    -- Убираем кавычки и разделяем запятой
     local cleaned = input:gsub("'", ""):gsub('"', '')
     for part in cleaned:gmatch("[^,]+") do
         table.insert(args, part:match("^%s*(.-)%s*$"))
@@ -22,13 +38,29 @@ Section:NewTextBox("Game Instance", "Format: PlaceID,JobID", function(input)
         local jobId = args[2]
         
         if placeId and jobId and #jobId > 0 then
-            -- Join twice with 1 second cooldown
-            for i = 0.01, 1500 do
+            print("Starting teleport to " .. placeId .. ", " .. jobId)
+            
+            -- Пытаемся подключиться несколько раз, но проверяем флаг отмены
+            for i = 1, 1500 do
+                -- Проверяем, не нажата ли кнопка отмены
+                if cancelTeleport then
+                    print("Teleport process stopped by user")
+                    break
+                end
+                
                 pcall(function()
                     game:GetService('TeleportService'):TeleportToPlaceInstance(placeId, jobId)
                     wait(0.01)
                 end)
             end
+            
+            if not cancelTeleport then
+                print("Teleport process completed")
+            end
+        else
+            print("Invalid input format!")
         end
+    else
+        print("Please use format: PlaceID,JobID")
     end
 end)
