@@ -1,11 +1,9 @@
 -- LocalScript: Place in StarterPlayer.StarterPlayerScripts
--- This script creates a simple GUI with a textbox for custom teleport scripts
+-- Simple GUI with single-line textbox for teleport scripts
 
 local Players = game:GetService("Players")
 local TeleportService = game:GetService("TeleportService")
 local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -23,14 +21,14 @@ screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 -- Main frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 400, 0, 250)
-mainFrame.Position = UDim2.new(0.5, -200, 0.5, -125)
+mainFrame.Size = UDim2.new(0, 450, 0, 180)
+mainFrame.Position = UDim2.new(0.5, -225, 0.5, -90)
 mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 mainFrame.BorderSizePixel = 0
 
 local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 10)
+corner.CornerRadius = UDim.new(0, 8)
 corner.Parent = mainFrame
 
 -- Title
@@ -38,32 +36,30 @@ local title = Instance.new("TextLabel")
 title.Name = "Title"
 title.Size = UDim2.new(1, 0, 0, 40)
 title.BackgroundTransparency = 1
-title.Text = "TELEPORT SCRIPT INPUT"
+title.Text = "TELEPORT SCRIPT EXECUTOR"
 title.Font = Enum.Font.GothamBold
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.TextSize = 18
 title.Parent = mainFrame
 
--- Textbox for custom scripts
+-- Single-line textbox for custom scripts
 local scriptBox = Instance.new("TextBox")
 scriptBox.Name = "ScriptBox"
-scriptBox.Size = UDim2.new(1, -20, 0, 140)
+scriptBox.Size = UDim2.new(1, -20, 0, 40)
 scriptBox.Position = UDim2.new(0, 10, 0, 50)
-scriptBox.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+scriptBox.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
 scriptBox.BorderSizePixel = 0
 scriptBox.Font = Enum.Font.RobotoMono
-scriptBox.PlaceholderText = "Paste your TeleportToPlaceInstance script here..."
+scriptBox.PlaceholderText = "Paste TeleportToPlaceInstance script here (single line)..."
 scriptBox.Text = ""
 scriptBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 scriptBox.TextSize = 14
-scriptBox.TextWrapped = true
-scriptBox.TextXAlignment = Enum.TextXAlignment.Left
-scriptBox.TextYAlignment = Enum.TextYAlignment.Top
+scriptBox.TextWrapped = false
+scriptBox.MultiLine = false
 scriptBox.ClearTextOnFocus = false
-scriptBox.MultiLine = true
 
 local scriptCorner = Instance.new("UICorner")
-scriptCorner.CornerRadius = UDim.new(0, 8)
+scriptCorner.CornerRadius = UDim.new(0, 6)
 scriptCorner.Parent = scriptBox
 
 scriptBox.Parent = mainFrame
@@ -72,44 +68,40 @@ scriptBox.Parent = mainFrame
 local statusLabel = Instance.new("TextLabel")
 statusLabel.Name = "Status"
 statusLabel.Size = UDim2.new(1, -20, 0, 30)
-statusLabel.Position = UDim2.new(0, 10, 0, 200)
+statusLabel.Position = UDim2.new(0, 10, 0, 100)
 statusLabel.BackgroundTransparency = 1
-statusLabel.Text = "Press ENTER to start teleporting (1500 attempts)"
+statusLabel.Text = "Press ENTER to start (1500 attempts)"
 statusLabel.Font = Enum.Font.Gotham
 statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
 statusLabel.TextSize = 14
 statusLabel.Parent = mainFrame
 
+-- Counter label
+local counterLabel = Instance.new("TextLabel")
+counterLabel.Name = "Counter"
+counterLabel.Size = UDim2.new(1, -20, 0, 30)
+counterLabel.Position = UDim2.new(0, 10, 0, 130)
+counterLabel.BackgroundTransparency = 1
+counterLabel.Text = ""
+counterLabel.Font = Enum.Font.Gotham
+counterLabel.TextColor3 = Color3.fromRGB(150, 200, 255)
+counterLabel.TextSize = 12
+counterLabel.Parent = mainFrame
+
 mainFrame.Parent = screenGui
 screenGui.Parent = playerGui
 
--- Function to parse and execute teleport script
-local function parseAndTeleport(scriptText)
-    -- Extract place ID and instance ID from the script
-    local placeId, instanceId
+-- Function to extract teleport info
+local function extractTeleportInfo(scriptText)
+    -- Remove whitespace
+    scriptText = scriptText:gsub("%s+", "")
     
-    -- Try to match common patterns
-    local patterns = {
-        "TeleportToPlaceInstance%(%s*(%d+)%s*,%s*['\"]([%w%-]+)['\"]",
-        "TeleportToPlaceInstance%(%s*(%d+)%s*,%s*([%w%-]+)"
-    }
+    -- Look for TeleportToPlaceInstance
+    local pattern = "TeleportToPlaceInstance%((%d+),['\"]([%w%-]+)['\"]%)"
+    local placeId, instanceId = scriptText:match(pattern)
     
-    for _, pattern in ipairs(patterns) do
-        local pId, iId = scriptText:match(pattern)
-        if pId and iId then
-            placeId = tonumber(pId)
-            instanceId = iId
-            break
-        end
-    end
-    
-    -- If no instance ID found, try just place ID
-    if not placeId then
-        placeId = tonumber(scriptText:match("TeleportToPlaceInstance%(%s*(%d+)"))
-    end
-    
-    if placeId then
-        return placeId, instanceId
+    if placeId and instanceId then
+        return tonumber(placeId), instanceId
     end
     
     return nil, nil
@@ -121,43 +113,31 @@ local function startTeleportLoop()
     
     local scriptText = scriptBox.Text
     if scriptText == "" then
-        statusLabel.Text = "Please enter a teleport script first"
-        task.wait(2)
-        statusLabel.Text = "Press ENTER to start teleporting (1500 attempts)"
+        statusLabel.Text = "Enter a script first"
+        task.wait(1.5)
+        statusLabel.Text = "Press ENTER to start (1500 attempts)"
         return
     end
     
-    local placeId, instanceId = parseAndTeleport(scriptText)
+    local placeId, instanceId = extractTeleportInfo(scriptText)
     
     if not placeId then
-        statusLabel.Text = "Invalid script format. Use: TeleportToPlaceInstance(placeId, 'instanceId')"
-        task.wait(2)
-        statusLabel.Text = "Press ENTER to start teleporting (1500 attempts)"
+        statusLabel.Text = "Invalid script format"
+        task.wait(1.5)
+        statusLabel.Text = "Press ENTER to start (1500 attempts)"
         return
     end
     
     IS_RUNNING = true
-    statusLabel.Text = "Starting teleport loop... (Press ESC to stop)"
-    
-    local completed = 0
-    local function attemptTeleport()
-        pcall(function()
-            if instanceId then
-                TeleportService:TeleportToPlaceInstance(placeId, instanceId)
-            else
-                TeleportService:Teleport(placeId)
-            end
-        end)
-        completed += 1
-        statusLabel.Text = string.format("Attempt %d/%d - Press ESC to stop", completed, ATTEMPTS)
-    end
+    statusLabel.Text = "RUNNING - Press ESC to stop"
     
     local connection
-    connection = UserInputService.InputBegan:Connect(function(input, processed)
-        if input.KeyCode == Enum.KeyCode.Escape then
+    connection = UserInputService.InputBegan:Connect(function(input)
+        if input.KeyCode == Enum.KeyCode.Escape and IS_RUNNING then
             IS_RUNNING = false
             connection:Disconnect()
-            statusLabel.Text = "Stopped. Press ENTER to start again"
+            statusLabel.Text = "STOPPED - Press ENTER to restart"
+            counterLabel.Text = ""
         end
     end)
     
@@ -165,19 +145,35 @@ local function startTeleportLoop()
     task.spawn(function()
         for i = 1, ATTEMPTS do
             if not IS_RUNNING then break end
-            attemptTeleport()
-            task.wait(COOLDOWN)
+            
+            counterLabel.Text = string.format("Attempt %d/%d", i, ATTEMPTS)
+            
+            pcall(function()
+                TeleportService:TeleportToPlaceInstance(placeId, instanceId)
+            end)
+            
+            if i < ATTEMPTS then
+                task.wait(COOLDOWN)
+            end
         end
         
         if IS_RUNNING then
             IS_RUNNING = false
-            statusLabel.Text = string.format("Completed %d attempts", ATTEMPTS)
+            statusLabel.Text = "COMPLETED 1500 attempts"
+            counterLabel.Text = ""
             connection:Disconnect()
         end
     end)
 end
 
--- Listen for Enter key
+-- Handle Enter key in textbox
+scriptBox.FocusLost:Connect(function(enterPressed)
+    if enterPressed and not IS_RUNNING then
+        startTeleportLoop()
+    end
+end)
+
+-- Also listen for global Enter key
 UserInputService.InputBegan:Connect(function(input, processed)
     if input.KeyCode == Enum.KeyCode.Return or input.KeyCode == Enum.KeyCode.KeypadEnter then
         if not processed and not IS_RUNNING then
