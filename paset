@@ -86,6 +86,7 @@ local SPECIAL_BRAINROTS = {
     ['Spaghetti Tualetti'] = 300_000_000,
     ['Esok Sekolah'] = 300_000_000,
     ['Nuclearo Dinossauro'] = 100_000_000,
+    ['Tacorita Bicicleta'] = 0,
 }
 
 -- 🎮 OBJECTS WITH EMOJIS AND IMPORTANCE
