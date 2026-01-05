@@ -665,6 +665,11 @@ for _, name in ipairs(griefersList) do
     griefersDict[name] = true
 end
 
+local skibidiDict = {}
+for _, name in ipairs(skibidi) do
+    skibidiDict[name] = true
+end
+
 local autistDict = {}
 for _, name in ipairs(autist) do
     autistDict[name] = true
