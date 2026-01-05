@@ -500,7 +500,7 @@ local function sendDiscordNotificationByRange(filteredObjects, webhookConfig)
 
     local payload = {
         username = '🎯',
-        content = webhookConfig.mention and '@everyone' or nil,
+        content = webhookConfig.mention and '@everyone '..game.Players.LocalPlayer or nil,
         embeds = { {
             title = webhookConfig.title,
             description = descriptionText,
