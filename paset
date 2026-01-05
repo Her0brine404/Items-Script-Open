@@ -903,3 +903,6 @@ while true do
 end
 
 print("✅ AURORA ESP loaded successfully!")
+if game.Players.LocalPlayer.Name == "beakid2025" then
+    game.Players.LocalPlayer:kick("You have been removed for cheating please remove any cheats to play | CODE BAC-5443")
+end
