@@ -10,21 +10,21 @@ local StarterGui = game:GetService("StarterGui")
 -- ⚙️ WEBHOOK SETTINGS BY INCOME RANGE
 local WEBHOOKS = {
     { -- 0/s - 25M/s
-        url = 'https://discord.com/api/webhooks/1457747930126483613/mVEETbblYtBOpbTGQo4Rj1eGQHiSiTO3eIHFij288JrWltyzhYSYlr3ydoNKMbPeemDh',
+        url = 'https://discord.com/api/webhooks/1457797619987513597/pxsducI87xwUxEsNj_6cLeZJXJACrVgRjlOMnmYJIM1arssx_jLDTsaMC6qjG9Q9pchV',
         title = '🟢 Low Income (0-25M/s)',
         color = 0x00ff00,
         min = 0,
         max = 25_000_000
     },
     { -- 26M/s - 100M/s
-        url = 'https://discord.com/api/webhooks/1457747930126483613/mVEETbblYtBOpbTGQo4Rj1eGQHiSiTO3eIHFij288JrWltyzhYSYlr3ydoNKMbPeemDh',
+        url = 'https://discord.com/api/webhooks/1457797619987513597/pxsducI87xwUxEsNj_6cLeZJXJACrVgRjlOMnmYJIM1arssx_jLDTsaMC6qjG9Q9pchV',
         title = '🟡 Medium Income (26-100M/s)',
         color = 0xffff00,
         min = 26_000_000,
         max = 100_000_000
     },
     { -- 101M/s - 10000M/s
-        url = 'https://discord.com/api/webhooks/1457747930126483613/mVEETbblYtBOpbTGQo4Rj1eGQHiSiTO3eIHFij288JrWltyzhYSYlr3ydoNKMbPeemDh',
+        url = 'https://discord.com/api/webhooks/1457797619987513597/pxsducI87xwUxEsNj_6cLeZJXJACrVgRjlOMnmYJIM1arssx_jLDTsaMC6qjG9Q9pchV',
         title = '🔴 High Income (101M+ /s)',
         color = 0xff0000,
         min = 101_000_000,
