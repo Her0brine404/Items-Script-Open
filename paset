@@ -9,27 +9,31 @@ local StarterGui = game:GetService("StarterGui")
 local TeleportService = game:GetService("TeleportService")
 
 -- 🔗 WEBHOOK CONFIGURATION
+-- 🔗 WEBHOOK CONFIGURATION
 local WEBHOOKS = {
     { -- 0/s - 25M/s
         url = 'https://discord.com/api/webhooks/1457457333943799821/WwHqSuylmO9c_hEm_O38HL5ZX8tPG4MHLbrMl5-o-p6fX03CcmLYlg2ZL64oKu5q2AJI',
         title = '🟢 Low Income (0-25M/s)',
         color = 0x00ff00,
         min = 0,
-        max = 25_000_000
+        max = 25_000_000,
+        mention = false
     },
     { -- 26M/s - 100M/s
         url = 'https://discord.com/api/webhooks/1457457333943799821/WwHqSuylmO9c_hEm_O38HL5ZX8tPG4MHLbrMl5-o-p6fX03CcmLYlg2ZL64oKu5q2AJI',
         title = '🟡 Medium Income (26-100M/s)',
         color = 0xffff00,
         min = 26_000_000,
-        max = 100_000_000
+        max = 100_000_000,
+        mention = false
     },
     { -- 101M/s - 10000M/s
         url = 'https://discord.com/api/webhooks/1457457333943799821/WwHqSuylmO9c_hEm_O38HL5ZX8tPG4MHLbrMl5-o-p6fX03CcmLYlg2ZL64oKu5q2AJI',
         title = '🔴 High Income (101M+ /s)',
         color = 0xff0000,
         min = 101_000_000,
-        max = 10_000_000_000
+        max = 10_000_000_000,
+        mention = false
     },
     { -- Special brainrots + overpay
         url = 'https://discord.com/api/webhooks/1457457333943799821/WwHqSuylmO9c_hEm_O38HL5ZX8tPG4MHLbrMl5-o-p6fX03CcmLYlg2ZL64oKu5q2AJI',
@@ -37,7 +41,8 @@ local WEBHOOKS = {
         color = 0xff00ff,
         min = 0,
         max = 10_000_000_000,
-        special = true
+        special = true,
+        mention = true
     }
 }
 
@@ -484,6 +489,7 @@ local function sendDiscordNotificationByRange(filteredObjects, webhookConfig)
 
     local payload = {
         username = '🎯',
+        content = webhookConfig.mention and '@everyone' or nil,
         embeds = { {
             title = webhookConfig.title,
             description = descriptionText,
@@ -528,6 +534,9 @@ local function sendDiscordNotificationByRange(filteredObjects, webhookConfig)
 
     if ok then
         print('✅ Webhook sent successfully')
+        if webhookConfig.mention then
+            print('📢 @everyone mention included')
+        end
     else
         warn('❌ Failed to send webhook: ' .. tostring(res))
     end
