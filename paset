@@ -592,22 +592,6 @@ local function scanAndNotify()
     end
 end
 
--- ⌨️ RESCAN BY F, COPY JOBID BY G
-local lastScan, DEBOUNCE = 0, 3
-UserInputService.InputBegan:Connect(function(input, gpe)
-    if gpe then return end
-    if input.KeyCode == Enum.KeyCode.F then
-        local now = tick()
-        if now - lastScan > DEBOUNCE then
-            lastScan = now
-            scanAndNotify()
-        end
-    elseif input.KeyCode == Enum.KeyCode.G then
-        setclipboard(game.JobId)
-        print('📋 JobId copied to clipboard: ' .. game.JobId)
-    end
-end)
-
 -- 🚀 START INITIAL SCAN
 task.spawn(function()
     wait(1)
