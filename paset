@@ -91,6 +91,12 @@ local SPECIAL_BRAINROTS = {
     ['Esok Sekolah'] = 300_000_000,
     ['Nuclearo Dinossauro'] = 100_000_000,
     ['Tacorita Bicicleta'] = 0,
+    ['Raccooni Jandelini'] = 0,
+    ['Money Money Reindeer'] = 100_000_000,
+    ['Skibidi Toilet'] = 0,
+    ['Jolly Jolly Sahur'] = 0,
+    ['Ginger Gerat'] = 0,
+    ['Tuff Toucan'] = 50_000_000,
 }
 
 -- 🎮 OBJECTS WITH EMOJIS AND IMPORTANCE
@@ -185,6 +191,13 @@ local OBJECTS = {
     ['Los Cucarachas'] = { emoji = '🪳', important = true },
     ['1x1x1x1'] = { emoji = '💾', important = true },
     ['Los Candies'] = { emoji = '🎶', important = true },
+    ['Tuff Toucan'] = { emoji = '🦜', important = true },
+    ['Money Money Reindeer'] = { emoji = '🦌💵', important = true },
+    ['Reinito Sleighito'] = { emoji = '🦌', important = true },
+    ['Skibidi Toilet'] = { emoji = '🚽', important = true },
+    ['Jolly Jolly Sahur'] = { emoji = '⌚', important = true },
+    ['Ginger Gerat'] = { emoji = '🍪', important = true },
+    ['Raccooni Jandelini'] = { emoji = '🦝', important = true },
 }
 
 -- IMPORTANT OBJECTS TABLE
