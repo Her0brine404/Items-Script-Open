@@ -85,6 +85,8 @@ local SPECIAL_BRAINROTS = {
 ['Spaghetti Tualetti'] = 300_000_000,
 ['Esok Sekolah'] = 300_000_000,
 ['Nuclearo Dinossauro'] = 100_000_000,
+['La Extinct Grande'] = 0,
+['Celularcini Viciosini'] = 0,
 }
 
 print('🎯 Brainrot Scanner v2.1 | JobId:', game.JobId)
