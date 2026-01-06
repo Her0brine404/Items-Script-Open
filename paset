@@ -931,30 +931,6 @@ local function scanAndNotify()
     end
 end
 
--- 🔑 KEYBIND SETUP
-local function setupKeybinds()
-    UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if gameProcessed then return end
-        
-        -- F key to scan
-        if input.KeyCode == Enum.KeyCode.F then
-            scanAndNotify()
-        end
-        
-        -- G key to copy Job ID
-        if input.KeyCode == Enum.KeyCode.G then
-            local jobId = game.JobId
-            if setclipboard then
-                setclipboard(jobId)
-                StarterGui:SetCore("SendNotification", {
-                    Title = "✅ Copied",
-                    Text = "Job ID copied to clipboard: " .. jobId,
-                    Duration = 3
-                })
-            end
-        end
-    end)
-end
 
 -- 🚀 INITIALIZE
 setupKeybinds()
