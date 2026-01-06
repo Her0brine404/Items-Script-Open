@@ -1,0 +1,946 @@
+-- 🎯 BRAINROT INCOME SCANNER v2.1 (4 WEBHOOKS + SPECIAL LIST)
+-- Scans all objects in Steal a Brainrot and sends Discord notifications
+-- Auto-run on start + by F key, copy JobId by G
+
+-- 🎨 ESP SYSTEM
+wait(2) -- Wait for initial loading
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
+local localPlayer = Players.LocalPlayer
+
+-- Correct notification with proper callback syntax
+StarterGui:SetCore("SendNotification", {
+    Title = "🎶 AURORA ESP",
+    Text = "Join our discord",
+    Duration = 15,
+    Callback = function()
+        print("Notification clicked")
+    end,
+    Button1 = "https://discord.gg/jdba3EhKFS"
+})
+
+-- Define usernames for special highlights with Discord usernames
+local usernamesToHighlight = {
+    SebastianBlack321 = "@faunzer",
+    rnbs1111 = "@tt_puffik",
+    jikolikk = "@h1dekii",
+    Mrfreshasian_14 = "@kombekuchka",
+    Kupetsizprovincii = "@???",
+    Ruanonaja01491 = "@youdontdoxme",
+    SigmaShluhaa = "@nevermine_sex",
+    bankeras111 = "@bankeras",
+    SAPFEARM = "@makelav_",
+    DTJDVS = "@eskizzz_",
+    kosty9000 = "@supertemka1488",
+    Mostic_2 = "@dild_06887",
+    godblessgrisha = "@ieuj",
+    izallenyo573 = "@tiger003044",
+    beakid2025 = "@fortunes0_0",
+    asusrogstrix0 = "@ng.xyz",
+    ProwlnoobGT = "@testaltaccountg",
+    Alixfir4 = "@marono1",
+    puin_555 = "@tolikdirma",
+    rejejdn0 = "@ibanki._88636",
+    ZxcPorg = "@kirillka1",
+    kokos_8547 = "@_2023moon2023_",
+    Prime_Nexxt = "@nexxt06_29097",
+    dinoboy31313131 = "@dessy4843",
+    HNKTO66_666 = "@kostelo1",
+    funpayzxcpsihokids = "@fuckingbless",
+    Jaidol22 = "@merzossti",
+    bofevas1 = "@bofevas1",
+    TylerDu4den = "@armatura0822"
+}
+
+local griefersList = {"TolikDemidovich2016", "TT_GERSXN", "youcantbeatmeinfl", "dontCallmedadbabygr1", "Alexmasnaiki", "ZeroEuroV3", "keepmybrainrot6777", "bob80743", "Puxeodd", "GuelDuGral", "Swarog21", "MrJukerson110", "L4STW0RDZ", "qweqqqq_3785", "elpastor12365", "Bigwayne804", "Cznyarr0", "Otaya311", "urtado21", "vtguerra0444", "Agod3256", "iopm20245", "GHSTOCK", "remove124321", "yaryar_820", "Yhumadsus", "35355fdv", "lxcvarden", "bebeegoo", "theyuutora24", "frechfry069", "carma2cutee", "osher3002", "rizzy_10006", "HKlgncx", "Therealthing530", "MacakoZad6", "Mert_killer900", "JossGuti22", "sebas_90210z", "Skibidipon200", "LUCI_09811", "dezzzzzahhb", "chdncjsskdockslkl", "Leminhthe0000000", "CFrank1784", "jdbdjxndm", "JxJ_Joseph", "xAstroBoy_1", "Sobi_Type", "Cznyarr0", "sdfg7681", "az9az9az94411", "evilbanbanxred", "2W6G3G", "Luisroblest97", "ilyj3y", "Steal_brainrot1505", "Dannybg77777", "funpayzxcpsihokids1", "dead222237", "vqkm", "karanisHIM", "TheGremlin4850", "markoponi3", "1hzsq", "444clawh", "Djamalimami", "donk123468", "TheMondraZ", "BANYOL66", "SEMA29733", "lmochingal", "alt_namber32", "Chequecam", "bilulu12465", "Philipetxbr", "LucidDreaming231"}
+local autist = {"zr3cinshlyxi"}
+local zr = {"Fitiloid"}
+local skibidi = {"Hai_izY"}
+local highlightedPlayers = {} -- Track highlighted players
+
+-- Convert griefersList, autist, and zr to dictionaries for faster lookup
+local griefersDict = {}
+for _, name in ipairs(griefersList) do
+    griefersDict[name] = true
+end
+
+local skibidiDict = {}
+for _, name in ipairs(skibidi) do
+    skibidiDict[name] = true
+end
+
+local autistDict = {}
+for _, name in ipairs(autist) do
+    autistDict[name] = true
+end
+
+local zrDict = {}
+for _, name in ipairs(zr) do
+    zrDict[name] = true
+end
+
+local function safeCreateHighlight(player, highlightColor, labelText)
+    -- Check if already highlighted
+    if highlightedPlayers[player.UserId] then 
+        -- Update existing highlight if needed
+        local data = highlightedPlayers[player.UserId]
+        if data.color ~= highlightColor or data.label ~= labelText then
+            safeRemoveHighlight(player)
+        else
+            return 
+        end
+    end
+    
+    -- Wait for character if needed
+    if not player.Character then
+        player.CharacterAdded:Wait()
+        task.wait(0.5) -- Additional wait for character to fully load
+    end
+    
+    local character = player.Character
+    if not character then return end
+    
+    -- Wait for head to exist
+    local head = character:WaitForChild("Head", 2)
+    if not head then return end
+    
+    -- Clean up any existing highlights first
+    pcall(function()
+        for _, obj in pairs(character:GetChildren()) do
+            if obj:IsA("Highlight") and obj.Name == "PlayerHighlight" then
+                obj:Destroy()
+            end
+        end
+    end)
+    
+    -- Clean up existing billboards
+    pcall(function()
+        for _, obj in pairs(head:GetChildren()) do
+            if obj:IsA("BillboardGui") and obj.Name == "PlayerLabel" then
+                obj:Destroy()
+            end
+        end
+    end)
+
+    -- Create highlight with error handling
+    local highlight
+    local success, highlightErr = pcall(function()
+        highlight = Instance.new("Highlight")
+        highlight.Name = "PlayerHighlight"
+        highlight.Parent = character
+        highlight.OutlineColor = highlightColor
+        highlight.FillColor = highlightColor
+        highlight.FillTransparency = 0.7
+        highlight.OutlineTransparency = 0.2
+        highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        highlight.Enabled = true
+        return true
+    end)
+    
+    if not success or not highlight then 
+        return 
+    end
+    
+    -- Create text label with error handling
+    local textBillboard
+    local success4, billboardErr = pcall(function()
+        local billboard = Instance.new("BillboardGui")
+        billboard.Name = "PlayerLabel"
+        billboard.Adornee = head
+        billboard.Size = UDim2.new(10, 0, 2, 0)
+        billboard.StudsOffset = Vector3.new(0, 3.5, 0)
+        billboard.AlwaysOnTop = true
+        billboard.MaxDistance = 1500
+        billboard.Enabled = true
+        
+        local textLabel = Instance.new("TextLabel")
+        textLabel.Text = labelText
+        textLabel.TextColor3 = highlightColor
+        textLabel.BackgroundTransparency = 1
+        textLabel.Size = UDim2.new(1, 0, 1, 0)
+        textLabel.TextScaled = false
+        textLabel.TextSize = 16
+        textLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
+        textLabel.TextStrokeTransparency = 0.3
+        textLabel.Font = Enum.Font.GothamBold
+        textLabel.TextYAlignment = Enum.TextYAlignment.Center
+        textLabel.TextXAlignment = Enum.TextXAlignment.Center
+        
+        textLabel.Parent = billboard
+        billboard.Parent = head
+        
+        textBillboard = billboard
+        return true
+    end)
+    
+    if not success4 then
+        if highlight then highlight:Destroy() end
+        return
+    end
+    
+    -- Store highlight data
+    highlightedPlayers[player.UserId] = {
+        highlight = highlight,
+        billboard = textBillboard,
+        player = player,
+        color = highlightColor,
+        label = labelText
+    }
+    
+    print("Highlighted player:", player.Name, "with color:", highlightColor)
+end
+
+local function safeRemoveHighlight(player)
+    local highlightData = highlightedPlayers[player.UserId]
+    if highlightData then
+        pcall(function()
+            if highlightData.highlight and highlightData.highlight.Parent then
+                highlightData.highlight:Destroy()
+            end
+        end)
+        
+        pcall(function()
+            if highlightData.billboard and highlightData.billboard.Parent then
+                highlightData.billboard:Destroy()
+            end
+        end)
+        
+        highlightedPlayers[player.UserId] = nil
+    end
+end
+
+local function shouldHighlight(player)
+    local playerName = player.Name
+    
+    if player == localPlayer then
+        return true, Color3.fromRGB(0, 255, 0), "YOU"
+    elseif griefersDict[playerName] then
+        return true, Color3.fromRGB(255, 0, 0), "🔴GRIEFER🔴\n" .. playerName
+    elseif usernamesToHighlight[playerName] then
+        local discordUsername = usernamesToHighlight[playerName]
+        return true, Color3.fromRGB(0, 255, 255), "AURORA🎶\n" .. discordUsername
+    elseif autistDict[playerName] then
+        return true, Color3.fromRGB(255, 105, 180), "BRBR PATAPIM"
+    elseif skibidiDict[playerName] then
+        return true, Color3.fromRGB(255, 255, 255), "🚽SKIBIDI TOILET🚽"
+    elseif zrDict[playerName] then
+        return true, Color3.fromRGB(255, 255, 0), "AURORA ESP DEV🍪"
+    end
+    
+    return false
+end
+
+local function safeHighlightPlayers()
+    for _, player in ipairs(Players:GetPlayers()) do
+        local shouldHighlightPlayer, color, label = shouldHighlight(player)
+        
+        if shouldHighlightPlayer then
+            safeCreateHighlight(player, color, label)
+        else
+            safeRemoveHighlight(player)
+        end
+    end
+end
+
+-- Function to handle character changes
+local function setupPlayerListeners(player)
+    -- Handle character changes for ALL players including yourself
+    local connection
+    connection = player.CharacterAdded:Connect(function(character)
+        task.wait(1) -- Wait for character to fully load
+        
+        local shouldHighlightPlayer, color, label = shouldHighlight(player)
+        if shouldHighlightPlayer then
+            safeCreateHighlight(player, color, label)
+        end
+    end)
+    
+    -- Clean up when character is removed
+    player.CharacterRemoving:Connect(function()
+        safeRemoveHighlight(player)
+    end)
+end
+
+-- Set up listeners for all existing players (including yourself)
+for _, player in ipairs(Players:GetPlayers()) do
+    setupPlayerListeners(player)
+end
+
+-- Set up listener for new players
+Players.PlayerAdded:Connect(function(player)
+    setupPlayerListeners(player)
+    task.wait(2) -- Wait for player to load
+    safeHighlightPlayers() -- Check if new player should be highlighted
+end)
+
+-- Handle player leaving
+Players.PlayerRemoving:Connect(function(player)
+    safeRemoveHighlight(player)
+    highlightedPlayers[player.UserId] = nil
+end)
+
+-- Set up self-highlight listener specifically for local player
+localPlayer.CharacterAdded:Connect(function(character)
+    task.wait(1)
+    safeCreateHighlight(localPlayer, Color3.fromRGB(0, 255, 0), "YOU\n" .. localPlayer.Name)
+end)
+
+-- Initial highlight for all players (with delay)
+task.wait(3)
+safeHighlightPlayers()
+
+-- Start periodic cleanup and highlight check in separate thread
+task.spawn(function()
+    while true do
+        task.wait(10) -- Check every 10 seconds
+        
+        -- Clean up highlights for players who left
+        local currentPlayerIds = {}
+        for _, player in ipairs(Players:GetPlayers()) do
+            currentPlayerIds[player.UserId] = true
+        end
+        
+        for userId, highlightData in pairs(highlightedPlayers) do
+            if not currentPlayerIds[userId] then
+                pcall(function()
+                    if highlightData.highlight and highlightData.highlight.Parent then
+                        highlightData.highlight:Destroy()
+                    end
+                    if highlightData.billboard and highlightData.billboard.Parent then
+                        highlightData.billboard:Destroy()
+                    end
+                end)
+                highlightedPlayers[userId] = nil
+            end
+        end
+        
+        -- Update highlights for current players (including yourself)
+        safeHighlightPlayers()
+    end
+end)
+
+print("✅ AURORA ESP loaded successfully!")
+
+-- =============================================
+-- INCOME SCANNER SECTION
+-- =============================================
+
+wait(10)
+local UserInputService = game:GetService('UserInputService')
+local HttpService = game:GetService('HttpService')
+local TeleportService = game:GetService("TeleportService")
+local RunService = game:GetService("RunService")
+
+-- 🔗 WEBHOOK CONFIGURATION
+local WEBHOOKS = {
+    { -- 0/s - 25M/s
+        url = 'https://discord.com/api/webhooks/1457457333943799821/WwHqSuylmO9c_hEm_O38HL5ZX8tPG4MHLbrMl5-o-p6fX03CcmLYlg2ZL64oKu5q2AJI',
+        title = '🟢 Low Income (0-25M/s)',
+        color = 0x00ff00,
+        min = 0,
+        max = 25_000_000,
+        mention = false
+    },
+    { -- 26M/s - 100M/s
+        url = 'https://discord.com/api/webhooks/1457457333943799821/WwHqSuylmO9c_hEm_O38HL5ZX8tPG4MHLbrMl5-o-p6fX03CcmLYlg2ZL64oKu5q2AJI',
+        title = '🟡 Medium Income (26-100M/s)',
+        color = 0xffff00,
+        min = 26_000_000,
+        max = 100_000_000,
+        mention = false
+    },
+    { -- 101M/s - 10000M/s
+        url = 'https://discord.com/api/webhooks/1457457333943799821/WwHqSuylmO9c_hEm_O38HL5ZX8tPG4MHLbrMl5-o-p6fX03CcmLYlg2ZL64oKu5q2AJI',
+        title = '🔴 High Income (101M+ /s)',
+        color = 0xff0000,
+        min = 101_000_000,
+        max = 10_000_000_000,
+        mention = false
+    },
+    { -- Special brainrots + overpay
+        url = 'https://discord.com/api/webhooks/1457457333943799821/WwHqSuylmO9c_hEm_O38HL5ZX8tPG4MHLbrMl5-o-p6fX03CcmLYlg2ZL64oKu5q2AJI',
+        title = '⭐️ SPECIAL BRAINROTS',
+        color = 0xff00ff,
+        min = 0,
+        max = 10_000_000_000,
+        special = true,
+        mention = true
+    }
+}
+
+-- 📋 SPECIAL BRAINROTS WITH MIN VALUES
+local SPECIAL_BRAINROTS = {
+    ['Garama and Madundung'] = 0,
+    ['Dragon Cannelloni'] = 0,
+    ['La Supreme Combinasion'] = 0,
+    ['Ketupat Kepat'] = 0,
+    ['Strawberry Elephant'] = 0,
+    ['Ketchuru and Musturu'] = 0,
+    ['Tralaledon'] = 0,
+    ['Tictac Sahur'] = 0,
+    ['Burguro And Fryuro'] = 0,
+    ['La Secret Combinasion'] = 0,
+    ['Spooky and Pumpky'] = 0,
+    ['Meowl'] = 0,
+    ['La Casa Boo'] = 0,
+    ['Headless Horseman'] = 0,
+    ['Los Tacoritas'] = 0,
+    ['Capitano Moby'] = 0,
+    ['Cooki and Milki'] = 0,
+    ['Fragrama and Chocrama'] = 0,
+    ['Guest 666'] = 0,
+    ['Lavadorito Spinito'] = 0,
+    ['Fishino Clownino'] = 0,
+    ['La Jolly Grande'] = 200_000_000,
+    ['W or L'] = 0,
+    ['Los Puggies'] = 300_000_000,
+    ['La Taco Combinasion'] = 300_000_000,
+    ['Chipso and Queso'] = 40_000_000,
+    ['Mieteteira Bicicleteira'] = 400_000_000,
+    ['Los Mobilis'] = 450_000_000,
+    ['La Spooky Grande'] = 400_000_000,
+    ['Eviledon'] = 189_000_000,
+    ['Chillin Chili'] = 300_000_000,
+    ['Money Money Puggy'] = 300_000_000,
+    ['Tang Tang Keletang'] = 100_000_000,
+    ['Los Primos'] = 0,
+    ['Orcaledon'] = 0,
+    ['Las Sis'] = 100_000_000,
+    ['La Extinct Grande'] = 300_000_000,
+    ['Los Bros'] = 100_000_000,
+    ['Spaghetti Tualetti'] = 300_000_000,
+    ['Esok Sekolah'] = 300_000_000,
+    ['Nuclearo Dinossauro'] = 100_000_000,
+    ['Tacorita Bicicleta'] = 0,
+    ['Raccooni Jandelini'] = 0,
+    ['Money Money Reindeer'] = 100_000_000,
+    ['Skibidi Toilet'] = 0,
+    ['Jolly Jolly Sahur'] = 0,
+    ['Ginger Gerat'] = 0,
+    ['Tuff Toucan'] = 50_000_000,
+}
+
+-- 🎮 OBJECTS WITH EMOJIS AND IMPORTANCE
+local OBJECTS = {
+    ['La Vacca Saturno Saturnita'] = { emoji = '🐄', important = false },
+    ['Chimpanzini Spiderini'] = { emoji = '🕷️', important = false },
+    ['Los Tralaleritos'] = { emoji = '🎵', important = false },
+    ['Las Tralaleritas'] = { emoji = '🎶', important = false },
+    ['Graipuss Medussi'] = { emoji = '🐍', important = false },
+    ['Torrtuginni Dragonfrutini'] = { emoji = '🐢', important = false },
+    ['Pot Hotspot'] = { emoji = '🔥', important = false },
+    ['La Grande Combinasion'] = { emoji = '🌟', important = true },
+    ['Garama and Madundung'] = { emoji = '🍝', important = true },
+    ['Secret Lucky Block'] = { emoji = '🎲', important = false },
+    ['Dragon Cannelloni'] = { emoji = '🐲', important = true },
+    ['Nuclearo Dinossauro'] = { emoji = '☢️', important = true },
+    ['Las Vaquitas Saturnitas'] = { emoji = '🐮', important = false },
+    ['Agarrini la Palini'] = { emoji = '🤹', important = false },
+    ['Los Hotspotsitos'] = { emoji = '⚡', important = true },
+    ['Esok Sekolah'] = { emoji = '🏫', important = true },
+    ['Nooo My Hotspot'] = { emoji = '📶', important = false },
+    ['La Supreme Combinasion'] = { emoji = '👑', important = true },
+    ['Admin Lucky Block'] = { emoji = '🔒', important = false },
+    ['Ketupat Kepat'] = { emoji = '🍙', important = true },
+    ['Strawberry Elephant'] = { emoji = '🐘', important = true },
+    ['Spaghetti Tualetti'] = { emoji = '🚽', important = true },
+    ['Ketchuru and Musturu'] = { emoji = '🍾', important = true },
+    ['La Secret Combinasion'] = { emoji = '🕵️', important = true },
+    ['La Karkerkar Combinasion'] = { emoji = '🤖', important = false },
+    ['Los Bros'] = { emoji = '👊', important = true },
+    ['Tralaledon'] = { emoji = '🦕', important = true },
+    ['La Extinct Grande'] = { emoji = '💀', important = true },
+    ['Las Sis'] = { emoji = '👭', important = true },
+    ['Tacorita Bicicleta'] = { emoji = '🌮', important = true },
+    ['Tictac Sahur'] = { emoji = '⏰', important = true },
+    ['Celularcini Viciosini'] = { emoji = '📱', important = true },
+    ['Los Primos'] = { emoji = '👬', important = true },
+    ['Tang Tang Keletang'] = { emoji = '🥁', important = true },
+    ['Money Money Puggy'] = { emoji = '💰', important = true },
+    ['Burguro And Fryuro'] = { emoji = '🍔', important = true },
+    ['Chillin Chili'] = { emoji = '🌶️', important = true },
+    ['Eviledon'] = { emoji = '😈', important = true },
+    ['La Spooky Grande'] = { emoji = '👻', important = true },
+    ['Los Mobilis'] = { emoji = '🚗', important = true },
+    ['Spooky and Pumpky'] = { emoji = '🎃', important = true },
+    ['Mieteteira Bicicleteira'] = { emoji = '🚴', important = true },
+    ['Meowl'] = { emoji = '🐱', important = true },
+    ['Chipso and Queso'] = { emoji = '🧀', important = true },
+    ['La Casa Boo'] = { emoji = '👁‍🗨', important = true },
+    ['Headless Horseman'] = { emoji = '👹', important = true },
+    ['Mariachi Corazoni'] = { emoji = '🎺', important = true },
+    ['La Taco Combinasion'] = { emoji = '🌮', important = true },
+    ['Capitano Moby'] = { emoji = '⚓', important = true },
+    ['Guest 666'] = { emoji = '🔥', important = true },
+    ['Cooki and Milki'] = { emoji = '🍪', important = true },
+    ['Los Puggies'] = { emoji = '🐶', important = true },
+    ['Fragrama and Chocrama'] = { emoji = '🍫', important = true },
+    ['Los Spaghettis'] = { emoji = '🍝', important = true },
+    ['Los Tacoritas'] = { emoji = '🌮', important = true },
+    ['Orcaledon'] = { emoji = '🐋', important = true },
+    ['Lavadorito Spinito'] = { emoji = '🌀', important = true },
+    ['Los Planitos'] = { emoji = '🛫', important = true },
+    ['W or L'] = { emoji = '🏆', important = true },
+    ['Fishino Clownino'] = { emoji = '🐠', important = true },
+    ['La Ginger Sekolah'] = { emoji = '🍪', important = true },
+    ['Chicleteira Noelteira'] = { emoji = '🍬', important = true },
+    ['La Jolly Grande'] = { emoji = '🎁', important = true },
+    ['Ginger'] = { emoji = '🍪', important = true },
+    ['Los Chicleteiras'] = { emoji = '🍭', important = true },
+    ['Gobblino Uniciclino'] = { emoji = '🦃', important = true },
+    ['Los 67'] = { emoji = '🎰', important = true },
+    ['Los Spooky Combinasionas'] = { emoji = '💀', important = true },
+    ['Swag Soda'] = { emoji = '🥤', important = true },
+    ['Los Combinasionas'] = { emoji = '🧩', important = true },
+    ['Los Burritos'] = { emoji = '🌯', important = true },
+    ['67'] = { emoji = '🎲', important = true },
+    ['Rang Ring Bus'] = { emoji = '🚌', important = true },
+    ['Los Nooo My Hotspotsitos'] = { emoji = '📡', important = true },
+    ['Chicleteirina Bicicleteirina'] = { emoji = '🚲', important = true },
+    ['Noo My Candy'] = { emoji = '🍬', important = true },
+    ['Los Quesadillas'] = { emoji = '🫓', important = true },
+    ['Quesadillo Vampiro'] = { emoji = '🧛', important = true },
+    ['Quesadilla Crocodila'] = { emoji = '🐊', important = true },
+    ['Ho Ho Ho Sahur'] = { emoji = '🎅', important = true },
+    ['Horegini Boom'] = { emoji = '💥', important = true },
+    ['Pot Pumpkin'] = { emoji = '🎃', important = true },
+    ['Pirulitoita Bicicleteira'] = { emoji = '🍭', important = true },
+    ['La Sahur Combinasion'] = { emoji = '🌙', important = true },
+    ['List List List Sahur'] = { emoji = '📋', important = true },
+    ['Noo My Examine'] = { emoji = '📘', important = true },
+    ['Cuadramat and Pakrahmatmamat'] = { emoji = '🧮', important = true },
+    ['Los Cucarachas'] = { emoji = '🪳', important = true },
+    ['1x1x1x1'] = { emoji = '💾', important = true },
+    ['Los Candies'] = { emoji = '🎶', important = true },
+    ['Tuff Toucan'] = { emoji = '🦜', important = true },
+    ['Money Money Reindeer'] = { emoji = '🦌💵', important = true },
+    ['Reinito Sleighito'] = { emoji = '🦌', important = true },
+    ['Skibidi Toilet'] = { emoji = '🚽', important = true },
+    ['Jolly Jolly Sahur'] = { emoji = '⌚', important = true },
+    ['Ginger Gerat'] = { emoji = '🍪', important = true },
+    ['Raccooni Jandelini'] = { emoji = '🦝', important = true },
+    ['Los 25'] = { emoji = '2️⃣5️⃣', important = true },
+    ['La Jolly Grande'] = { emoji = '🏴‍☠️', important = true },
+    ['Los Jolly Combinasionas'] = { emoji = '🏴‍☠️', important = true },
+}
+
+-- IMPORTANT OBJECTS TABLE
+local ALWAYS_IMPORTANT = {}
+for name, cfg in pairs(OBJECTS) do
+    if cfg.important then
+        ALWAYS_IMPORTANT[name] = true
+    end
+end
+
+-- 💰 INCOME PARSER
+local function parseGenerationText(s)
+    if type(s) ~= 'string' or s == '' then return nil end
+    local norm = s:gsub('%$', ''):gsub(',', ''):gsub('%s+', '')
+    local num, suffix = norm:match('^([%-%d%.]+)([KkMmBb]?)/s$')
+    if not num then return nil end
+    local val = tonumber(num)
+    if not val then return nil end
+    local mult = 1
+    if suffix == 'K' or suffix == 'k' then mult = 1e3
+    elseif suffix == 'M' or suffix == 'm' then mult = 1e6
+    elseif suffix == 'B' or suffix == 'b' then mult = 1e9
+    end
+    return val * mult
+end
+
+local function formatIncomeNumber(n)
+    if not n then return 'Unknown' end
+    if n >= 1e9 then
+        local v = n / 1e9
+        return (v % 1 == 0 and string.format('%dB/s', v) or string.format('%.1fB/s', v)):gsub('%.0B/s', 'B/s')
+    elseif n >= 1e6 then
+        local v = n / 1e6
+        return (v % 1 == 0 and string.format('%dM/s', v) or string.format('%.1fM/s', v)):gsub('%.0M/s', 'M/s')
+    elseif n >= 1e3 then
+        local v = n / 1e3
+        return (v % 1 == 0 and string.format('%dK/s', v) or string.format('%.1fK/s', v)):gsub('%.0K/s', 'K/s')
+    else
+        return string.format('%d/s', n)
+    end
+end
+
+-- 📝 UI TEXT GRABBER
+local function grabText(inst)
+    if not inst then return nil end
+    if inst:IsA('TextLabel') or inst:IsA('TextButton') or inst:IsA('TextBox') then
+        local ok, ct = pcall(function() return inst.ContentText end)
+        if ok and type(ct) == 'string' and #ct > 0 then return ct end
+        local t = inst.Text
+        if type(t) == 'string' and #t > 0 then return t end
+    end
+    if inst:IsA('StringValue') then
+        local v = inst.Value
+        if type(v) == 'string' and #v > 0 then return v end
+    end
+    return nil
+end
+
+local function getOverheadInfo(animalOverhead)
+    if not animalOverhead then return nil, nil end
+
+    local name = nil
+    local display = animalOverhead:FindFirstChild('DisplayName')
+    if display then name = grabText(display) end
+
+    if not name then
+        local anyText = animalOverhead:FindFirstChildOfClass('TextLabel')
+            or animalOverhead:FindFirstChildOfClass('TextButton')
+            or animalOverhead:FindFirstChildOfClass('TextBox')
+        name = anyText and grabText(anyText) or nil
+    end
+
+    local genText = nil
+    local generation = animalOverhead:FindFirstChild('Generation')
+    if generation then genText = grabText(generation) end
+
+    if not genText then
+        for _, child in ipairs(animalOverhead:GetDescendants()) do
+            if child:IsA('TextLabel') or child:IsA('TextButton') or child:IsA('TextBox') then
+                local text = grabText(child)
+                if text and (text:match('%$') or text:match('/s')) then
+                    genText = text
+                    break
+                end
+            end
+        end
+    end
+
+    return name, genText
+end
+
+local function isGuidName(s)
+    return s:match('^[0-9a-fA-F]+%-%x+%-%x+%-%x+%-%x+$') ~= nil
+end
+
+-- 🔍 FULL SCANNERS
+local function scanPlots()
+    local results = {}
+    local Plots = workspace:FindFirstChild('Plots')
+    if not Plots then return results end
+
+    for _, plot in ipairs(Plots:GetChildren()) do
+        local Podiums = plot:FindFirstChild('AnimalPodiums')
+        if Podiums then
+            for _, podium in ipairs(Podiums:GetChildren()) do
+                local Base = podium:FindFirstChild('Base')
+                local Spawn = Base and Base:FindFirstChild('Spawn')
+                local Attachment = Spawn and Spawn:FindFirstChild('Attachment')
+                local Overhead = Attachment and Attachment:FindFirstChild('AnimalOverhead')
+                if Overhead then
+                    local name, genText = getOverheadInfo(Overhead)
+                    local genNum = genText and parseGenerationText(genText) or nil
+                    if name and genNum then
+                        table.insert(results, { name = name, gen = genNum, location = 'Plot' })
+                    end
+                end
+            end
+        end
+    end
+    return results
+end
+
+local function scanRunway()
+    local results = {}
+    for _, obj in ipairs(workspace:GetChildren()) do
+        if isGuidName(obj.Name) then
+            local part = obj:FindFirstChild('Part')
+            local info = part and part:FindFirstChild('Info')
+            local overhead = info and info:FindFirstChild('AnimalOverhead')
+            if overhead then
+                local name, genText = getOverheadInfo(overhead)
+                local genNum = genText and parseGenerationText(genText) or nil
+                if name and genNum then
+                    table.insert(results, { name = name, gen = genNum, location = 'Runway' })
+                end
+            end
+        end
+    end
+    return results
+end
+
+local function scanAllOverheads()
+    local results, processed = {}, {}
+    local function recursiveSearch(parent)
+        for _, child in ipairs(parent:GetChildren()) do
+            if child.Name == 'AnimalOverhead' and not processed[child] then
+                processed[child] = true
+                local name, genText = getOverheadInfo(child)
+                local genNum = genText and parseGenerationText(genText) or nil
+                if name and genNum then
+                    table.insert(results, { name = name, gen = genNum, location = 'World' })
+                end
+            end
+            pcall(function() recursiveSearch(child) end)
+        end
+    end
+    recursiveSearch(workspace)
+    return results
+end
+
+local function scanPlayerGui()
+    local results = {}
+    local lp = Players.LocalPlayer
+    if not lp then return results end
+
+    local playerGui = lp:FindFirstChild('PlayerGui')
+    if not playerGui then return results end
+
+    local function searchInGui(parent)
+        for _, child in ipairs(parent:GetChildren()) do
+            if child.Name == 'AnimalOverhead' or child.Name:match('Animal') then
+                local name, genText = getOverheadInfo(child)
+                local genNum = genText and parseGenerationText(genText) or nil
+                if name and genNum then
+                    table.insert(results, { name = name, gen = genNum, location = 'GUI' })
+                end
+            end
+            pcall(function() searchInGui(child) end)
+        end
+    end
+    searchInGui(playerGui)
+    return results
+end
+
+-- 📊 MAIN COLLECT FUNCTION
+local function collectAll(timeoutSec)
+    local t0 = os.clock()
+    local collected = {}
+
+    repeat
+        collected = {}
+
+        local allSources = {
+            scanPlots(),
+            scanRunway(),
+            scanAllOverheads(),
+            scanPlayerGui(),
+        }
+
+        for _, source in ipairs(allSources) do
+            for _, item in ipairs(source) do
+                table.insert(collected, item)
+            end
+        end
+
+        local seen, unique = {}, {}
+        for _, item in ipairs(collected) do
+            local key = item.name .. ':' .. tostring(item.gen)
+            if not seen[key] then
+                seen[key] = true
+                table.insert(unique, item)
+            end
+        end
+        collected = unique
+
+        if #collected > 0 then break end
+        task.wait(0.5)
+    until os.clock() - t0 > timeoutSec
+
+    return collected
+end
+
+local function shouldShow(name, gen)
+    if ALWAYS_IMPORTANT[name] then return true end
+    return (type(gen) == 'number') and gen >= 1_000_000
+end
+
+-- 🎯 SPECIAL BRAINROT CHECK
+local function isSpecialBrainrot(name, gen)
+    local minValue = SPECIAL_BRAINROTS[name]
+    if not minValue then return false end
+    return gen >= minValue
+end
+
+-- 🔗 EXECUTOR REQUEST
+local function getRequester()
+    return http_request or request or (syn and syn.request) or (fluxus and fluxus.request) or (KRNL_HTTP and KRNL_HTTP.request) or http.request
+end
+
+-- 📤 RANGE SENDER
+local function sendDiscordNotificationByRange(filteredObjects, webhookConfig)
+    local req = getRequester()
+    if not req then
+        warn('❌ No HTTP API found in executor')
+        return
+    end
+
+    if #filteredObjects == 0 then return end
+
+    local jobId = game.JobId
+    local placeId = game.PlaceId
+
+    local important, regular = {}, {}
+    for _, obj in ipairs(filteredObjects) do
+        if ALWAYS_IMPORTANT[obj.name] then
+            table.insert(important, obj)
+        else
+            table.insert(regular, obj)
+        end
+    end
+
+    table.sort(important, function(a, b) return a.gen > b.gen end)
+    table.sort(regular, function(a, b) return a.gen > b.gen end)
+
+    local sorted = {}
+    for _, obj in ipairs(important) do table.insert(sorted, obj) end
+    for _, obj in ipairs(regular) do table.insert(sorted, obj) end
+
+    local objectsList = {}
+    for i = 1, math.min(15, #sorted) do
+        local obj = sorted[i]
+        local emoji = OBJECTS[obj.name] and OBJECTS[obj.name].emoji or '💰'
+        local mark = ALWAYS_IMPORTANT[obj.name] and '⭐️ ' or ''
+
+        local overpayMark = ''
+        if webhookConfig.special and SPECIAL_BRAINROTS[obj.name] then
+            local minVal = SPECIAL_BRAINROTS[obj.name]
+            if obj.gen > minVal then
+                overpayMark = string.format(' 🔥 **OVERPAY** (min: %s)', formatIncomeNumber(minVal))
+            end
+        end
+
+        table.insert(objectsList, string.format('%s%s **%s** (%s)%s', mark, emoji, obj.name, formatIncomeNumber(obj.gen), overpayMark))
+    end
+    local objectsText = table.concat(objectsList, '\n')
+
+    -- Телепорт: две строки Lua
+    local teleportLua = string.format(
+        "```%d, '%s'```",
+        placeId,
+        jobId
+    )
+
+    local descriptionText = webhookConfig.special
+        and string.format('⭐️ Found %d special brainrots!', #filteredObjects)
+        or string.format('💎 Found %d objects in range!', #filteredObjects)
+
+    local rangeText = webhookConfig.special
+        and '**All from special list**'
+        or string.format('**%s - %s**', formatIncomeNumber(webhookConfig.min), formatIncomeNumber(webhookConfig.max))
+
+    local payload = {
+        username = '🎯',
+        content = webhookConfig.mention and '@everyone '..game.Players.LocalPlayer or nil,
+        embeds = { {
+            title = webhookConfig.title,
+            description = descriptionText,
+            color = webhookConfig.color,
+            fields = {
+                {
+                    name = '🆔 Server (Job ID)',
+                    value = tostring(jobId),
+                    inline = true,
+                },
+                {
+                    name = '📊 Income range',
+                    value = rangeText,
+                    inline = true,
+                },
+                {
+                    name = '💰 Objects:',
+                    value = objectsText,
+                    inline = false,
+                },
+                {
+                    name = '🚀 Teleport code:',
+                    value = teleportLua,
+                    inline = false,
+                },
+            },
+            footer = {
+                text = string.format('Found: %d • %s', #filteredObjects, os.date('%H:%M:%S')),
+            },
+            timestamp = DateTime.now():ToIsoDate(),
+        } },
+    }
+
+    local ok, res = pcall(function()
+        return req({
+            Url = webhookConfig.url,
+            Method = 'POST',
+            Headers = { ['Content-Type'] = 'application/json' },
+            Body = HttpService:JSONEncode(payload),
+        })
+    end)
+
+    if ok then
+        if webhookConfig.mention then
+
+        end
+    else
+        warn('❌ Failed to send webhook: ' .. tostring(res))
+    end
+end
+
+-- 🎮 MAIN FUNCTION (4 WEBHOOKS)
+local function scanAndNotify()
+    local allFound = collectAll(8.0)
+
+    local groups = {{}, {}, {}, {}}
+    local hasSpecial = false
+
+    -- First pass: find special brainrots
+    for _, obj in ipairs(allFound) do
+        if OBJECTS[obj.name] and shouldShow(obj.name, obj.gen) and type(obj.gen) == 'number' then
+            if isSpecialBrainrot(obj.name, obj.gen) then
+                hasSpecial = true
+                table.insert(groups[4], obj)
+            end
+        end
+    end
+
+    if hasSpecial then
+        for _, obj in ipairs(groups[4]) do
+            local emoji = OBJECTS[obj.name] and OBJECTS[obj.name].emoji or '💰'
+        end
+        sendDiscordNotificationByRange(groups[4], WEBHOOKS[4])
+    else
+        -- Second pass: categorize regular objects
+        for _, obj in ipairs(allFound) do
+            if OBJECTS[obj.name] and shouldShow(obj.name, obj.gen) and type(obj.gen) == 'number' then
+                for i = 1, 3 do
+                    local webhook = WEBHOOKS[i]
+                    if obj.gen >= webhook.min and obj.gen <= webhook.max then
+                        table.insert(groups[i], obj)
+                        break
+                    end
+                end
+            end
+        end
+
+
+        for i, group in ipairs(groups) do
+            if #group > 0 then
+                for _, obj in ipairs(group) do
+                    local emoji = OBJECTS[obj.name] and OBJECTS[obj.name].emoji or '💰'
+                end
+            end
+        end
+
+        for i, group in ipairs(groups) do
+            if #group > 0 then
+                sendDiscordNotificationByRange(group, WEBHOOKS[i])
+            end
+        end
+    end
+end
+
+
+-- 🚀 INITIALIZE
+setupKeybinds()
+
+-- Start initial scan in separate thread
+task.spawn(function()
+    wait(1)
+    scanAndNotify()
+end)
+
+print("[AURORA ESP] мама пончика жиробасина")
+print("[AURORA ESP] мама пончика жиробасина")
+print("[AURORA ESP] мама пончика жиробасина")
+print("✅")
