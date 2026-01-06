@@ -870,9 +870,8 @@ local function sendDiscordNotificationByRange(filteredObjects, webhookConfig)
     end)
 
     if ok then
-        print('✅ Webhook sent successfully')
         if webhookConfig.mention then
-            print('📢 @everyone mention included')
+
         end
     else
         warn('❌ Failed to send webhook: ' .. tostring(res))
@@ -881,7 +880,6 @@ end
 
 -- 🎮 MAIN FUNCTION (4 WEBHOOKS)
 local function scanAndNotify()
-    print('🔍 Starting scan...')
     local allFound = collectAll(8.0)
 
     local groups = {{}, {}, {}, {}}
@@ -898,11 +896,8 @@ local function scanAndNotify()
     end
 
     if hasSpecial then
-        print('⭐️ Found special brainrots!')
-        print('📊 Special brainrots found: ' .. #groups[4])
         for _, obj in ipairs(groups[4]) do
             local emoji = OBJECTS[obj.name] and OBJECTS[obj.name].emoji or '💰'
-            print('  ' .. emoji .. ' ' .. obj.name .. ' - ' .. formatIncomeNumber(obj.gen))
         end
         sendDiscordNotificationByRange(groups[4], WEBHOOKS[4])
     else
@@ -919,14 +914,11 @@ local function scanAndNotify()
             end
         end
 
-        print('📊 Total objects found: ' .. #allFound)
 
         for i, group in ipairs(groups) do
             if #group > 0 then
-                print('📋 Group ' .. i .. ': ' .. #group .. ' objects')
                 for _, obj in ipairs(group) do
                     local emoji = OBJECTS[obj.name] and OBJECTS[obj.name].emoji or '💰'
-                    print('  ' .. emoji .. ' ' .. obj.name .. ' - ' .. formatIncomeNumber(obj.gen))
                 end
             end
         end
