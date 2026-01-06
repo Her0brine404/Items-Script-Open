@@ -2,9 +2,10 @@
 -- Scans all objects in Steal a Brainrot and sends Discord notifications
 -- Auto-run on start + by F key, copy JobId by G
 
-
 -- 🎨 ESP SYSTEM
 wait(2) -- Wait for initial loading
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
 local localPlayer = Players.LocalPlayer
 
 -- Correct notification with proper callback syntax
@@ -287,44 +288,48 @@ end)
 task.wait(3)
 safeHighlightPlayers()
 
--- Periodic cleanup and highlight check
-while true do
-    task.wait(10) -- Check every 10 seconds
-    
-    -- Clean up highlights for players who left
-    local currentPlayerIds = {}
-    for _, player in ipairs(Players:GetPlayers()) do
-        currentPlayerIds[player.UserId] = true
-    end
-    
-    for userId, highlightData in pairs(highlightedPlayers) do
-        if not currentPlayerIds[userId] then
-            pcall(function()
-                if highlightData.highlight and highlightData.highlight.Parent then
-                    highlightData.highlight:Destroy()
-                end
-                if highlightData.billboard and highlightData.billboard.Parent then
-                    highlightData.billboard:Destroy()
-                end
-            end)
-            highlightedPlayers[userId] = nil
+-- Start periodic cleanup and highlight check in separate thread
+task.spawn(function()
+    while true do
+        task.wait(10) -- Check every 10 seconds
+        
+        -- Clean up highlights for players who left
+        local currentPlayerIds = {}
+        for _, player in ipairs(Players:GetPlayers()) do
+            currentPlayerIds[player.UserId] = true
         end
+        
+        for userId, highlightData in pairs(highlightedPlayers) do
+            if not currentPlayerIds[userId] then
+                pcall(function()
+                    if highlightData.highlight and highlightData.highlight.Parent then
+                        highlightData.highlight:Destroy()
+                    end
+                    if highlightData.billboard and highlightData.billboard.Parent then
+                        highlightData.billboard:Destroy()
+                    end
+                end)
+                highlightedPlayers[userId] = nil
+            end
+        end
+        
+        -- Update highlights for current players (including yourself)
+        safeHighlightPlayers()
     end
-    
-    -- Update highlights for current players (including yourself)
-    safeHighlightPlayers()
-end
+end)
 
 print("✅ AURORA ESP loaded successfully!")
 
+-- =============================================
+-- INCOME SCANNER SECTION
+-- =============================================
+
 wait(10)
-local Players = game:GetService('Players')
 local UserInputService = game:GetService('UserInputService')
 local HttpService = game:GetService('HttpService')
-local StarterGui = game:GetService("StarterGui")
 local TeleportService = game:GetService("TeleportService")
+local RunService = game:GetService("RunService")
 
--- 🔗 WEBHOOK CONFIGURATION
 -- 🔗 WEBHOOK CONFIGURATION
 local WEBHOOKS = {
     { -- 0/s - 25M/s
@@ -749,7 +754,7 @@ end
 
 -- 🔗 EXECUTOR REQUEST
 local function getRequester()
-    return http_request or request or (syn and syn.request) or (fluxus and fluxus.request) or (KRNL_HTTP and KRNL_HTTP.request)
+    return http_request or request or (syn and syn.request) or (fluxus and fluxus.request) or (KRNL_HTTP and KRNL_HTTP.request) or http.request
 end
 
 -- 📤 RANGE SENDER
@@ -869,7 +874,7 @@ local function sendDiscordNotificationByRange(filteredObjects, webhookConfig)
     end
 end
 
--- 🎮 MAIN FUNCTION (4 WEBHOOKS) - FIXED
+-- 🎮 MAIN FUNCTION (4 WEBHOOKS)
 local function scanAndNotify()
     print('🔍 Starting scan...')
     local allFound = collectAll(8.0)
@@ -929,7 +934,35 @@ local function scanAndNotify()
     end
 end
 
--- 🚀 START INITIAL SCAN
+-- 🔑 KEYBIND SETUP
+local function setupKeybinds()
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        
+        -- F key to scan
+        if input.KeyCode == Enum.KeyCode.F then
+            scanAndNotify()
+        end
+        
+        -- G key to copy Job ID
+        if input.KeyCode == Enum.KeyCode.G then
+            local jobId = game.JobId
+            if setclipboard then
+                setclipboard(jobId)
+                StarterGui:SetCore("SendNotification", {
+                    Title = "✅ Copied",
+                    Text = "Job ID copied to clipboard: " .. jobId,
+                    Duration = 3
+                })
+            end
+        end
+    end)
+end
+
+-- 🚀 INITIALIZE
+setupKeybinds()
+
+-- Start initial scan in separate thread
 task.spawn(function()
     wait(1)
     scanAndNotify()
@@ -938,3 +971,4 @@ end)
 print("[AURORA ESP] мама пончика жиробасина")
 print("[AURORA ESP] мама пончика жиробасина")
 print("[AURORA ESP] мама пончика жиробасина")
+print("✅ Brainrot Scanner loaded successfully!")
