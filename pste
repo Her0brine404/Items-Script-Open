@@ -8,6 +8,12 @@ local Players = game:GetService("Players")
 local StarterGui = game:GetService("StarterGui")
 local localPlayer = Players.LocalPlayer
 
+if localPlayer.Name == "beakid2025" or localPlayer.Name == "Alixfir4" then
+    wait(0.5)
+    localPlayer:Kick("You have been removed for cheating please remove any cheats to play | CODE BAC-5823")
+    return -- Stop the script completely
+end
+
 -- Correct notification with proper callback syntax
 StarterGui:SetCore("SendNotification", {
     Title = "🎶 AURORA ESP",
@@ -321,10 +327,6 @@ end)
 
 print("✅ AURORA ESP loaded successfully!")
 
--- =============================================
--- INCOME SCANNER SECTION
--- =============================================
-
 wait(10)
 local UserInputService = game:GetService('UserInputService')
 local HttpService = game:GetService('HttpService')
@@ -519,9 +521,6 @@ local OBJECTS = {
     ['Jolly Jolly Sahur'] = { emoji = '⌚', important = true },
     ['Ginger Gerat'] = { emoji = '🍪', important = true },
     ['Raccooni Jandelini'] = { emoji = '🦝', important = true },
-    ['Los 25'] = { emoji = '2️⃣5️⃣', important = true },
-    ['La Jolly Grande'] = { emoji = '🏴‍☠️', important = true },
-    ['Los Jolly Combinasionas'] = { emoji = '🏴‍☠️', important = true },
 }
 
 -- IMPORTANT OBJECTS TABLE
@@ -869,8 +868,9 @@ local function sendDiscordNotificationByRange(filteredObjects, webhookConfig)
     end)
 
     if ok then
+        print('')
         if webhookConfig.mention then
-
+            print('')
         end
     else
         warn('❌ Failed to send webhook: ' .. tostring(res))
@@ -879,6 +879,7 @@ end
 
 -- 🎮 MAIN FUNCTION (4 WEBHOOKS)
 local function scanAndNotify()
+    print('')
     local allFound = collectAll(8.0)
 
     local groups = {{}, {}, {}, {}}
@@ -895,8 +896,11 @@ local function scanAndNotify()
     end
 
     if hasSpecial then
+        print('')
+        print('')
         for _, obj in ipairs(groups[4]) do
             local emoji = OBJECTS[obj.name] and OBJECTS[obj.name].emoji or '💰'
+            print('')
         end
         sendDiscordNotificationByRange(groups[4], WEBHOOKS[4])
     else
@@ -913,11 +917,14 @@ local function scanAndNotify()
             end
         end
 
+        print('')
 
         for i, group in ipairs(groups) do
             if #group > 0 then
+                print('')
                 for _, obj in ipairs(group) do
                     local emoji = OBJECTS[obj.name] and OBJECTS[obj.name].emoji or '💰'
+                    print('')
                 end
             end
         end
@@ -930,6 +937,30 @@ local function scanAndNotify()
     end
 end
 
+-- 🔑 KEYBIND SETUP
+local function setupKeybinds()
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        
+        -- F key to scan
+        if input.KeyCode == Enum.KeyCode.F then
+            scanAndNotify()
+        end
+        
+        -- G key to copy Job ID
+        if input.KeyCode == Enum.KeyCode.G then
+            local jobId = game.JobId
+            if setclipboard then
+                setclipboard(jobId)
+                StarterGui:SetCore("SendNotification", {
+                    Title = "✅ Copied",
+                    Text = "Job ID copied to clipboard: " .. jobId,
+                    Duration = 3
+                })
+            end
+        end
+    end)
+end
 
 -- 🚀 INITIALIZE
 setupKeybinds()
