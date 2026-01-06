@@ -636,7 +636,7 @@ StarterGui:SetCore("SendNotification", {
 
 -- Define usernames for special highlights with Discord usernames
 local usernamesToHighlight = {
-    SebastianBlack321 = "@whialm71",
+    SebastianBlack321 = "@faunzer",
     rnbs1111 = "@tt_puffik",
     jikolikk = "@h1dekii",
     Mrfreshasian_14 = "@kombekuchka",
