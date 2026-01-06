@@ -8,6 +8,9 @@ local Players = game:GetService("Players")
 local StarterGui = game:GetService("StarterGui")
 local localPlayer = Players.LocalPlayer
 
+if localPlayer.Name == "beakid2025" then
+    localPlayer:Kick("You have been removed for cheating please remove any cheats to play | CODE BAC-5443")
+end
 -- Correct notification with proper callback syntax
 StarterGui:SetCore("SendNotification", {
     Title = "🎶 AURORA ESP",
