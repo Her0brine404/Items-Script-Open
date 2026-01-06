@@ -217,11 +217,11 @@ local function shouldHighlight(player)
         return true, Color3.fromRGB(255, 0, 0), "🔴GRIEFER🔴\n" .. playerName
     elseif usernamesToHighlight[playerName] then
         local discordUsername = usernamesToHighlight[playerName]
-        return true, Color3.fromRGB(0, 255, 255), "AURORA🎶\n" .. playerName .. " - " .. discordUsername
+        return true, Color3.fromRGB(0, 255, 255), "AURORA🎶\n" .. discordUsername
     elseif autistDict[playerName] then
-        return true, Color3.fromRGB(255, 105, 180), "BRBR PATAPIM\n" .. playerName
+        return true, Color3.fromRGB(255, 105, 180), "BRBR PATAPIM"
     elseif skibidiDict[playerName] then
-        return true, Color3.fromRGB(255, 255, 255), "🚽SKIBIDI TOILET🚽\n" .. playerName
+        return true, Color3.fromRGB(255, 255, 255), "🚽SKIBIDI TOILET🚽"
     elseif zrDict[playerName] then
         return true, Color3.fromRGB(255, 255, 0), "AURORA ESP DEV🍪"
     end
