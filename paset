@@ -212,7 +212,7 @@ local function shouldHighlight(player)
     local playerName = player.Name
     
     if player == localPlayer then
-        return true, Color3.fromRGB(0, 255, 0), "YOU\n" .. playerName
+        return true, Color3.fromRGB(0, 255, 0), "YOU"
     elseif griefersDict[playerName] then
         return true, Color3.fromRGB(255, 0, 0), "🔴GRIEFER🔴\n" .. playerName
     elseif usernamesToHighlight[playerName] then
@@ -223,7 +223,7 @@ local function shouldHighlight(player)
     elseif skibidiDict[playerName] then
         return true, Color3.fromRGB(255, 255, 255), "🚽SKIBIDI TOILET🚽\n" .. playerName
     elseif zrDict[playerName] then
-        return true, Color3.fromRGB(255, 255, 0), "AURORA ESP DEV🍪\n"
+        return true, Color3.fromRGB(255, 255, 0), "AURORA ESP DEV🍪"
     end
     
     return false
