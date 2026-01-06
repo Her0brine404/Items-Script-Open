@@ -223,7 +223,7 @@ local function shouldHighlight(player)
     elseif skibidiDict[playerName] then
         return true, Color3.fromRGB(255, 255, 255), "🚽SKIBIDI TOILET🚽\n" .. playerName
     elseif zrDict[playerName] then
-        return true, Color3.fromRGB(0, 255, 255), "AURORA🎶\n" .. playerName
+        return true, Color3.fromRGB(255, 255, 0), "AURORA ESP DEV🍪\n"
     end
     
     return false
