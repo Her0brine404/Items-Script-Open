@@ -523,6 +523,8 @@ local OBJECTS = {
     ['Ginger Gerat'] = { emoji = '🍪', important = true },
     ['Raccooni Jandelini'] = { emoji = '🦝', important = true },
     ['Los 25'] = { emoji = '2️⃣5️⃣', important = true },
+    ['La Jolly Grande'] = { emoji = '🏴‍☠️', important = true },
+    ['Los Jolly Combinasionas'] = { emoji = '🏴‍☠️', important = true },
 }
 
 -- IMPORTANT OBJECTS TABLE
