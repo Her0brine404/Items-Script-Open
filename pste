@@ -340,7 +340,7 @@ local RunService = game:GetService("RunService")
 -- 🔗 WEBHOOK CONFIGURATION
 local WEBHOOKS = {
     { -- 0/s - 25M/s
-        url = 'https://discord.com/api/webhooks/1457457333943799821/WwHqSuylmO9c_hEm_O38HL5ZX8tPG4MHLbrMl5-o-p6fX03CcmLYlg2ZL64oKu5q2AJI',
+        url = 'https://discord.com/api/webhooks/1458537208716988447/6LeUuPGy1p7rQs4FFdQmPXYkxze4Vs8SC_Bxre-WNr2M3qRZE95t2d3ndCXkiHkCaQtg',
         title = '🟢 Low Income (0-25M/s)',
         color = 0x00ff00,
         min = 0,
@@ -348,7 +348,7 @@ local WEBHOOKS = {
         mention = false
     },
     { -- 26M/s - 100M/s
-        url = 'https://discord.com/api/webhooks/1457457333943799821/WwHqSuylmO9c_hEm_O38HL5ZX8tPG4MHLbrMl5-o-p6fX03CcmLYlg2ZL64oKu5q2AJI',
+        url = 'https://discord.com/api/webhooks/1458537208716988447/6LeUuPGy1p7rQs4FFdQmPXYkxze4Vs8SC_Bxre-WNr2M3qRZE95t2d3ndCXkiHkCaQtg',
         title = '🟡 Medium Income (26-100M/s)',
         color = 0xffff00,
         min = 26_000_000,
