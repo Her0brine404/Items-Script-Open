@@ -426,6 +426,7 @@ local SPECIAL_BRAINROTS = {
     ['Tuff Toucan'] = 50_000_000,
     ['Los Hotspotsitos'] = 0,
     ['Mariachi Corazoni'] = 100_000_000,
+    ['Los Combinasionas'] = 300_000_000,
 }
 
 -- 🎮 OBJECTS WITH EMOJIS AND IMPORTANCE
