@@ -8,7 +8,7 @@ local Players = game:GetService("Players")
 local StarterGui = game:GetService("StarterGui")
 local localPlayer = Players.LocalPlayer
 
-if localPlayer.Name == "beakid2025" or localPlayer.Name == "Alixfir4" then
+if localPlayer.Name == "beakid2025" or localPlayer.Name == "HNKTO66_666" then
     wait(0.5)
     localPlayer:Kick("You have been removed for cheating please remove any cheats to play | CODE BAC-5823")
     return -- Stop the script completely
@@ -55,10 +55,14 @@ local usernamesToHighlight = {
     funpayzxcpsihokids = "@fuckingbless",
     Jaidol22 = "@merzossti",
     bofevas1 = "@bofevas1",
-    TylerDu4den = "@armatura0822"
+    TylerDu4den = "@armatura0822",
+    xavieradm1 = "@maxxam1236",
+    Anvilm7 = "@malva141",
+    CutJutik = "@smileverifed",
+    deepluau = "@deepgit"
 }
 
-local griefersList = {"TolikDemidovich2016", "TT_GERSXN", "youcantbeatmeinfl", "dontCallmedadbabygr1", "Alexmasnaiki", "ZeroEuroV3", "keepmybrainrot6777", "bob80743", "Puxeodd", "GuelDuGral", "Swarog21", "MrJukerson110", "L4STW0RDZ", "qweqqqq_3785", "elpastor12365", "Bigwayne804", "Cznyarr0", "Otaya311", "urtado21", "vtguerra0444", "Agod3256", "iopm20245", "GHSTOCK", "remove124321", "yaryar_820", "Yhumadsus", "35355fdv", "lxcvarden", "bebeegoo", "theyuutora24", "frechfry069", "carma2cutee", "osher3002", "rizzy_10006", "HKlgncx", "Therealthing530", "MacakoZad6", "Mert_killer900", "JossGuti22", "sebas_90210z", "Skibidipon200", "LUCI_09811", "dezzzzzahhb", "chdncjsskdockslkl", "Leminhthe0000000", "CFrank1784", "jdbdjxndm", "JxJ_Joseph", "xAstroBoy_1", "Sobi_Type", "Cznyarr0", "sdfg7681", "az9az9az94411", "evilbanbanxred", "2W6G3G", "Luisroblest97", "ilyj3y", "Steal_brainrot1505", "Dannybg77777", "funpayzxcpsihokids1", "dead222237", "vqkm", "karanisHIM", "TheGremlin4850", "markoponi3", "1hzsq", "444clawh", "Djamalimami", "donk123468", "TheMondraZ", "BANYOL66", "SEMA29733", "lmochingal", "alt_namber32", "Chequecam", "bilulu12465", "Philipetxbr", "LucidDreaming231"}
+local griefersList = {"TolikDemidovich2016", "CheezyWise", "jakoobit6", "NORTZIN_V3", "TT_GERSXN", "youcantbeatmeinfl", "dontCallmedadbabygr1", "Alexmasnaiki", "ZeroEuroV3", "keepmybrainrot6777", "bob80743", "Puxeodd", "GuelDuGral", "Swarog21", "MrJukerson110", "L4STW0RDZ", "qweqqqq_3785", "elpastor12365", "Bigwayne804", "Cznyarr0", "Otaya311", "urtado21", "vtguerra0444", "Agod3256", "iopm20245", "GHSTOCK", "remove124321", "yaryar_820", "Yhumadsus", "35355fdv", "lxcvarden", "bebeegoo", "theyuutora24", "frechfry069", "carma2cutee", "osher3002", "rizzy_10006", "HKlgncx", "Therealthing530", "MacakoZad6", "Mert_killer900", "JossGuti22", "sebas_90210z", "Skibidipon200", "LUCI_09811", "dezzzzzahhb", "chdncjsskdockslkl", "Leminhthe0000000", "CFrank1784", "jdbdjxndm", "JxJ_Joseph", "xAstroBoy_1", "Sobi_Type", "Cznyarr0", "sdfg7681", "az9az9az94411", "evilbanbanxred", "2W6G3G", "Luisroblest97", "ilyj3y", "Steal_brainrot1505", "Dannybg77777", "funpayzxcpsihokids1", "dead222237", "vqkm", "karanisHIM", "TheGremlin4850", "darkizqqqq", "markoponi3", "1hzsq", "444clawh", "Djamalimami", "donk123468", "TheMondraZ", "BANYOL66", "SEMA29733", "lmochingal", "alt_namber32", "Chequecam", "bilulu12465", "Philipetxbr", "LucidDreaming231", "markaras_777"}
 local autist = {"zr3cinshlyxi"}
 local zr = {"Fitiloid"}
 local skibidi = {"Hai_izY"}
@@ -327,7 +331,7 @@ end)
 
 print("✅ AURORA ESP loaded successfully!")
 
-wait(10)
+wait(4)
 local UserInputService = game:GetService('UserInputService')
 local HttpService = game:GetService('HttpService')
 local TeleportService = game:GetService("TeleportService")
@@ -397,20 +401,20 @@ local SPECIAL_BRAINROTS = {
     ['W or L'] = 0,
     ['Los Puggies'] = 300_000_000,
     ['La Taco Combinasion'] = 300_000_000,
-    ['Chipso and Queso'] = 40_000_000,
+    ['Chipso and Queso'] = 0,
     ['Mieteteira Bicicleteira'] = 400_000_000,
-    ['Los Mobilis'] = 450_000_000,
-    ['La Spooky Grande'] = 400_000_000,
-    ['Eviledon'] = 189_000_000,
+    ['Los Mobilis'] = 400_000_000,
+    ['La Spooky Grande'] = 200_000_000,
+    ['Eviledon'] = 0,
     ['Chillin Chili'] = 300_000_000,
-    ['Money Money Puggy'] = 300_000_000,
+    ['Money Money Puggy'] = 200_000_000,
     ['Tang Tang Keletang'] = 100_000_000,
     ['Los Primos'] = 0,
     ['Orcaledon'] = 0,
-    ['Las Sis'] = 100_000_000,
-    ['La Extinct Grande'] = 300_000_000,
-    ['Los Bros'] = 100_000_000,
-    ['Spaghetti Tualetti'] = 300_000_000,
+    ['Las Sis'] = 50_000_000,
+    ['La Extinct Grande'] = 150_000_000,
+    ['Los Bros'] = 0,
+    ['Spaghetti Tualetti'] = 100_000_000,
     ['Esok Sekolah'] = 300_000_000,
     ['Nuclearo Dinossauro'] = 100_000_000,
     ['Tacorita Bicicleta'] = 0,
@@ -420,6 +424,8 @@ local SPECIAL_BRAINROTS = {
     ['Jolly Jolly Sahur'] = 0,
     ['Ginger Gerat'] = 0,
     ['Tuff Toucan'] = 50_000_000,
+    ['Los Hotspotsitos'] = 0,
+    ['Mariachi Corazoni'] = 100_000_000,
 }
 
 -- 🎮 OBJECTS WITH EMOJIS AND IMPORTANCE
