@@ -348,7 +348,7 @@ local WEBHOOKS = {
         mention = false
     },
     { -- 26M/s - 100M/s
-        url = 'https://discord.com/api/webhooks/1458537208716988447/6LeUuPGy1p7rQs4FFdQmPXYkxze4Vs8SC_Bxre-WNr2M3qRZE95t2d3ndCXkiHkCaQtg',
+        url = 'https://discord.com/api/webhooks/1458544368834183221/O0Tawu6yqMJmAR_WbGpESF_CxRSxsSzgGm-O9ndTkdp-HFtR4Ob_OpXiX-DW9UEuEMdQ',
         title = '🟡 Medium Income (26-100M/s)',
         color = 0xffff00,
         min = 26_000_000,
@@ -356,7 +356,7 @@ local WEBHOOKS = {
         mention = false
     },
     { -- 101M/s - 10000M/s
-        url = 'https://discord.com/api/webhooks/1457457333943799821/WwHqSuylmO9c_hEm_O38HL5ZX8tPG4MHLbrMl5-o-p6fX03CcmLYlg2ZL64oKu5q2AJI',
+        url = 'https://discord.com/api/webhooks/1458544086859513896/R19c-DOExCHwPaiyU_NkIJmTRS82OPn83SuR24_1CwGgw4KSU0MB7L0uiJo_puWbC8RL',
         title = '🔴 High Income (101M+ /s)',
         color = 0xff0000,
         min = 101_000_000,
@@ -406,7 +406,7 @@ local SPECIAL_BRAINROTS = {
     ['Los Mobilis'] = 400_000_000,
     ['La Spooky Grande'] = 200_000_000,
     ['Eviledon'] = 0,
-    ['Chillin Chili'] = 300_000_000,
+    ['Chillin Chili'] = 0,
     ['Money Money Puggy'] = 200_000_000,
     ['Tang Tang Keletang'] = 100_000_000,
     ['Los Primos'] = 0,
