@@ -1,22 +1,14 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("Game Joiner", "DarkTheme")
+local Window = Library.CreateLib("discord.gg/MqGEJ2tE5W", "Synapse")
 local Tab = Window:NewTab("Teleport")
 local Section = Tab:NewSection("Join Game Instance")
 
 -- Переменная для контроля процесса подключения
 local cancelTeleport = false
 
--- Секция с управлением
-local Section2 = Tab:NewSection("Control")
-
--- Кнопка отмены
-Section2:NewButton("Cancel Teleport", "Stop current teleport process", function()
-    cancelTeleport = true
-    print("Teleport cancelled!")
-end)
 
 -- Текстовое поле для подключения
-Section:NewTextBox("Game Instance", "Format: PlaceID,JobID", function(input)
+Section:NewTextBox("15k", "Format: PlaceID,JobID", function(input)
     -- Сбрасываем флаг отмены
     cancelTeleport = false
     
@@ -40,14 +32,15 @@ Section:NewTextBox("Game Instance", "Format: PlaceID,JobID", function(input)
             local teleportFailedConnection
             teleportFailedConnection = game:GetService("TeleportService").TeleportInitFailed:Connect(function(player, teleportResult, errorMessage)
                 if errorMessage:find("Can't join private instance through specific joins") or 
-                   errorMessage:find("Unauthorized") then
-                    print("Private instance error detected: " .. errorMessage)
+                   errorMessage:find("Unauthorized") or 
+                   errorMessage:find("Unable to join game") then
+                    print("canceled")
                     cancelTeleport = true
                 end
             end)
             
             -- Пытаемся подключиться несколько раз, но проверяем флаг отмены
-            for i = 1, 1500 do
+            for i = 1, 15000 do
                 -- Проверяем, не нажата ли кнопка отмены
                 if cancelTeleport then
                     print("Teleport process stopped")
@@ -68,7 +61,7 @@ Section:NewTextBox("Game Instance", "Format: PlaceID,JobID", function(input)
                     end
                 end
                 
-                wait(0.01)
+                wait(0.00001)
             end
             
             -- Отключаем обработчик
@@ -87,4 +80,9 @@ Section:NewTextBox("Game Instance", "Format: PlaceID,JobID", function(input)
     else
         print("Please use format: PlaceID,JobID")
     end
+end)
+-- Кнопка отмены
+Section:NewButton("Cancel Teleport", "Stop current teleport process", function()
+    cancelTeleport = true
+    print("Teleport cancelled!")
 end)
