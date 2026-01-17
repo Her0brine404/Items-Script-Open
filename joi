@@ -1,5 +1,5 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("discord.gg/MqGEJ2tE5W <-- aurora esp", "Synapse")
+local Window = Library.CreateLib("", "Synapse")
 local Tab = Window:NewTab("Teleport")
 local Section = Tab:NewSection("Join Game Instance")
 
@@ -8,7 +8,7 @@ local cancelTeleport = false
 
 
 -- Текстовое поле для подключения
-Section:NewTextBox("discord.gg/MqGEJ2tE5W [START]", "Format: PlaceID,JobID", function(input)
+Section:NewTextBox("[START]", "Format: PlaceID,JobID", function(input)
     -- Сбрасываем флаг отмены
     cancelTeleport = false
     
@@ -83,7 +83,7 @@ Section:NewTextBox("discord.gg/MqGEJ2tE5W [START]", "Format: PlaceID,JobID", fun
     end
 end)
 -- Кнопка отмены
-Section:NewButton("discord.gg/MqGEJ2tE5W [CANCEL]", "Stop current teleport process", function()
+Section:NewButton("[STOP]", "Stop current teleport process", function()
     cancelTeleport = true
     print("Teleport cancelled!")
 end)
